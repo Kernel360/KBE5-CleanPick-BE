@@ -1,9 +1,7 @@
 package com.kdev5.cleanpick.customer.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.PreferredManagerId;
-import com.kdev5.cleanpick.user.domain.User;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
-import org.apache.catalina.Manager;
 
 @Entity
 @Table(name = "preferred_manager")

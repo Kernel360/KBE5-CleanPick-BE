@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.enumeration.LoginType;
+import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
