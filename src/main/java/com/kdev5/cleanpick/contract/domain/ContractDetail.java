@@ -14,6 +14,8 @@ public class ContractDetail {
     private Long contractId;
 
     @MapsId
+    @ManyToOne
+    @JoinColumn(name = "contract_id")
     private Contract contract;
 
     private LocalDateTime checkIn;

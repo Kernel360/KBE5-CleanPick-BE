@@ -8,12 +8,13 @@ import jakarta.persistence.*;
 @Table(
         name = "contract_option",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"contract_id", "option_id"})
+                @UniqueConstraint(columnNames = {"contract_id", "cleaning_option_id"})
         }
 )
 public class ContractOption extends BaseTimeEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

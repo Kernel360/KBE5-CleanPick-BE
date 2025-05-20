@@ -1,10 +1,9 @@
 package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
-import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.customer.domain.Customer;
-import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
