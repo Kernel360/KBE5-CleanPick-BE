@@ -1,13 +1,14 @@
-package com.kdev5.cleanpick.user.domain;
+package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.enumeration.Role;
-import com.kdev5.cleanpick.user.domain.enumeration.LoginType;
+import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import jakarta.persistence.*;
 
+import java.time.LocalTime;
+
 @Entity
-@Table(name = "users")
-public class User extends BaseTimeEntity {
+@Table(name = "manager")
+public class Manager extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +29,22 @@ public class User extends BaseTimeEntity {
     @Column(length = 255)
     private String address;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+//    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false)
+//    private Role role;
 
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
+
+    @Lob
+    private String profileMessage;
+
+
+    @Column(name = "day_of_week", nullable = false)
+    private int dayOfWeek;
+
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)

@@ -2,8 +2,8 @@ package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
+import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,11 +17,11 @@ public class Contract extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private User manager;
+    private Customer manager;
 
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)

@@ -1,7 +1,8 @@
 package com.kdev5.cleanpick.review.domain;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.user.domain.User;
+import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 
@@ -14,11 +15,11 @@ public class Review extends BaseTimeEntity{
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "manger_id", nullable = false)
-    private User manager;
+    private Manager manager;
 
     @ManyToOne
     @JoinColumn(name = "contract_id", nullable = false)

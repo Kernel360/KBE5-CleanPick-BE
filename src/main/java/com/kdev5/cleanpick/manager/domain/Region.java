@@ -1,4 +1,4 @@
-package com.kdev5.cleanpick.user.domain;
+package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;

@@ -1,6 +1,7 @@
-package com.kdev5.cleanpick.user.domain;
+package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import com.kdev5.cleanpick.manager.domain.Region;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,5 +17,5 @@ public class ManagerAvailableRegion extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "manager_id", insertable = false, updatable = false)
-    private User manager;
+    private Manager manager;
 }

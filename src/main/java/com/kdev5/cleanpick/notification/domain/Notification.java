@@ -1,8 +1,9 @@
 package com.kdev5.cleanpick.notification.domain;
 
 
+import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.User;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,12 +14,18 @@ public class Notification extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
+    @JoinColumn(name = "receiver_id", nullable = true)
+    private Customer customer;
 
-    @Lob
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = true)
+    private Manager manager;
+
+    @Column(name="message", nullable = false)
     private String message;
 
-    @Column(name = "read_or_not")
+    // @Lob text 엄청 큰 스트링
+
+    @Column(name = "is_read")
     private boolean isRead;
 }

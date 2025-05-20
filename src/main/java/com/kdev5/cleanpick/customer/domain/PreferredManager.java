@@ -1,6 +1,6 @@
-package com.kdev5.cleanpick.user.domain;
-
+package com.kdev5.cleanpick.customer.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,10 +13,11 @@ public class PreferredManager extends BaseTimeEntity {
     @MapsId("customerId")
     @OneToOne
     @JoinColumn(name = "customer_id")
-    private User customer;
+    private Customer customer;
 
     @MapsId("managerId")
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private User manager;
+    private Manager manager;
 }
+
