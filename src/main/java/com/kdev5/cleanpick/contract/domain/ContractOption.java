@@ -21,6 +21,6 @@ public class ContractOption extends BaseTimeEntity {
     private Contract contract;
 
     @ManyToOne
-    @JoinColumn(name = "option_id", nullable = false)
+    @JoinColumn(name = "cleaning_option_id", nullable = false)
     private CleaningOption cleaningOption;
 }

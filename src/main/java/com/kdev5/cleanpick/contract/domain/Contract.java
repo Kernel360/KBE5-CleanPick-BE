@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.contract.domain;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 
@@ -21,10 +22,10 @@ public class Contract extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private Customer manager;
+    private Manager manager;
 
     @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
+    @JoinColumn(name = "cleaning_id", nullable = false)
     private Cleaning cleaning;
 
     @ManyToOne
@@ -32,15 +33,9 @@ public class Contract extends BaseTimeEntity {
     private RoutineContract routineContract;
 
     private LocalDateTime contractDate;
-    private LocalDateTime checkIn;
-    private LocalDateTime checkOut;
 
     @Column(length = 255, nullable = false)
     private String address;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContractStatus status;
 
     @Column(nullable = false)
     private int totalPrice;
@@ -48,11 +43,7 @@ public class Contract extends BaseTimeEntity {
     @Column(nullable = false)
     private int totalTime;
 
-    @Column(length = 50)
-    private String pet;
+    @Column(name="is_personal", nullable = false )
+    private boolean isPersonal;
 
-    private String request;
-
-    @Column(length = 50, nullable = false)
-    private String housingType;
 }

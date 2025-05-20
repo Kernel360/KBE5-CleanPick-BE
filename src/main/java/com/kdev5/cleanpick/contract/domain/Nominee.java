@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.User;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,7 +17,7 @@ public class Nominee extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
-    private User manager;
+    private Manager manager;
 
     @Column(name = "is_accepted", nullable = false)
     private boolean isAccepted;

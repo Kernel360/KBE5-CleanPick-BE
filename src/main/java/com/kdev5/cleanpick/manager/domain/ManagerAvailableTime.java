@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.manager.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Entity
@@ -16,8 +17,9 @@ public class ManagerAvailableTime extends BaseTimeEntity {
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 
-    @Column(name = "day_of_week", nullable = false)
-    private int dayOfWeek;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DayOfWeek dayOfWeek;
 
     private LocalTime startTime;
     private LocalTime endTime;

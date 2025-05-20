@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.review.domain;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.manager.domain.Manager;
+import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import jakarta.persistence.*;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 
@@ -18,7 +19,7 @@ public class Review extends BaseTimeEntity{
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "manger_id", nullable = false)
+    @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 
     @ManyToOne
@@ -32,7 +33,6 @@ public class Review extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Type type;
+    private ReviewType type;
 
-    public enum Type { manger, user }
 }

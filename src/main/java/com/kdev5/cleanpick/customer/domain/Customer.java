@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.customer.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.user.domain.enumeration.LoginType;
+import com.kdev5.cleanpick.customer.domain.enumeration.LoginType;
 import jakarta.persistence.*;
 
 @Entity
@@ -26,10 +26,6 @@ public class Customer extends BaseTimeEntity {
 
     @Column(length = 255)
     private String address;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private Role role;
 
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;

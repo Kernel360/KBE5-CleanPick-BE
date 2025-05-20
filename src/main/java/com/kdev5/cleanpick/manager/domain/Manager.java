@@ -26,25 +26,11 @@ public class Manager extends BaseTimeEntity {
     @Column(name = "phone_number", length = 50, nullable = false)
     private String phoneNumber;
 
-    @Column(length = 255)
-    private String address;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private Role role;
-
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
 
-    @Lob
+    @Column(name = "profile_message")
     private String profileMessage;
-
-
-    @Column(name = "day_of_week", nullable = false)
-    private int dayOfWeek;
-
-    private LocalTime startTime;
-    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
