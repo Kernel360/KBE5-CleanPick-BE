@@ -3,7 +3,9 @@ package com.kdev5.cleanpick.global.response;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
 
