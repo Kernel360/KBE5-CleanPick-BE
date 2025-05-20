@@ -22,4 +22,5 @@ public class CleaningOption extends BaseTimeEntity {
 
     private int extraPrice;
     private int extraDuration;
+    //test commit
 }
