@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.beans.JavaBean;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+
 }
