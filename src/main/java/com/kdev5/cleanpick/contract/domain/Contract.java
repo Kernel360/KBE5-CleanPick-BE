@@ -33,6 +33,8 @@ public class Contract extends BaseTimeEntity {
 
     private LocalDateTime contractDate;
 
+
+
     @Column(length = 255, nullable = false)
     private String address;
 
