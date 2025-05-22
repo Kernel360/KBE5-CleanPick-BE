@@ -2,11 +2,15 @@ package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "contract_detail")
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContractDetail {
 
     @Id
@@ -19,6 +23,7 @@ public class ContractDetail {
     private Contract contract;
 
     private LocalDateTime checkIn;
+
     private LocalDateTime checkOut;
 
     @Enumerated(EnumType.STRING)
@@ -32,5 +37,17 @@ public class ContractDetail {
 
     @Column(length = 50, nullable = false)
     private String housingType;
+
+    @Builder
+    public ContractDetail(Contract contract, Long contractId, LocalDateTime checkIn, LocalDateTime checkOut, String pet, ContractStatus status, String request, String housingType) {
+        this.contract = contract;
+        this.contractId = contractId;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.pet = pet;
+        this.status = status;
+        this.request = request;
+        this.housingType = housingType;
+    }
 
 }
