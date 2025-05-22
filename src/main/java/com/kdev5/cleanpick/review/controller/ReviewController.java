@@ -1,10 +1,12 @@
 package com.kdev5.cleanpick.review.controller;
 
 import com.kdev5.cleanpick.global.response.ApiResponse;
+import com.kdev5.cleanpick.global.response.PageResponse;
 import com.kdev5.cleanpick.review.service.ReviewService;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,7 @@ public class ReviewController {
     }
 
     @GetMapping
-    private ResponseEntity<ApiResponse<List<ReviewResponseDto>>> readMyReview() {
-        return ResponseEntity.ok(ApiResponse.ok(reviewService.readMyReview()));
+    private ResponseEntity<ApiResponse<PageResponse<ReviewResponseDto>>> readMyReview(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(reviewService.readMyReview(pageable))));
     }
 }

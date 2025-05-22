@@ -16,11 +16,12 @@ import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +58,9 @@ public class ReviewService {
         return review.toDto();
     }
 
-    public List<ReviewResponseDto> readMyReview() {
-        List<Review> reviews = userType.equals("ROLE_USER") ? reviewRepository.findAllReviewByCustomerId(userId) : reviewRepository.findAllReviewByManagerId(userId);
-
-        return reviews.stream()
-                .map(Review::toDto)
-                .collect(Collectors.toList());
+    public Page<ReviewResponseDto> readMyReview(Pageable pageable) {
+        Page<Review> reviews = userType.equals("ROLE_USER") ? reviewRepository.findAllReviewByCustomerId(userId, pageable) : reviewRepository.findAllReviewByManagerId(userId, pageable);
+        return reviews.map(Review::toDto);
     }
 
     private ReviewContext resolveReviewer(WriteReviewRequestDto dto) {
