@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,14 @@ public class ReviewService {
         }
 
         return review.toDto();
+    }
+
+    public List<ReviewResponseDto> readMyReview() {
+        List<Review> reviews = userType.equals("ROLE_USER") ? reviewRepository.findAllReviewByCustomerId(userId) : reviewRepository.findAllReviewByManagerId(userId);
+
+        return reviews.stream()
+                .map(Review::toDto)
+                .collect(Collectors.toList());
     }
 
     private ReviewContext resolveReviewer(WriteReviewRequestDto dto) {
