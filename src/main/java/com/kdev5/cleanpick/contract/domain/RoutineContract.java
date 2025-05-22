@@ -2,8 +2,7 @@ package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import net.minidev.json.JSONArray;
+
 
 import java.time.LocalDateTime;
 

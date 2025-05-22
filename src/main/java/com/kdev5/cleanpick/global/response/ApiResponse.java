@@ -17,7 +17,7 @@ public class ApiResponse<T> {
 
     // 요청 성공한 경우
     public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(true, data, null, null);
+        return new ApiResponse<>(true, data, "SUCCESS", "요청에 성공하였습니다.");
     }
 
     //단순 에러

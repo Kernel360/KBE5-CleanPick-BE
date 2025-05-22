@@ -22,8 +22,6 @@ public class ContractController {
 
     @PostMapping("/createContract")
     public ApiResponse<Contract> createContract(@RequestBody ContractRequestDto contractDto) {
-        System.out.println(contractDto);
-        System.out.println("사용자 아이디 : " + contractDto.getCustomerId());
         Contract newContract = contractService.createContract(contractDto);
         return ApiResponse.ok(newContract);
     }
