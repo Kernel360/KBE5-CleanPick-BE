@@ -2,18 +2,20 @@ package com.kdev5.cleanpick.review.domain;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
-import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
 import jakarta.persistence.*;
-import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "review")
-public class Review extends BaseTimeEntity{
+public class Review extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,16 +49,5 @@ public class Review extends BaseTimeEntity{
         this.rating = rating;
         this.content = content;
         this.type = type;
-    }
-
-    public ReviewResponseDto toDto(){
-        String name = type.equals(ReviewType.TO_MANAGER) ? manager.getName() : customer.getName();
-
-        return ReviewResponseDto.builder()
-                .id(id)
-                .targetName(name)
-                .rating(rating)
-                .content(content)
-                .build();
     }
 }

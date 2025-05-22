@@ -8,6 +8,7 @@ import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
+import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import com.kdev5.cleanpick.review.domain.Review;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
@@ -21,12 +22,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewFileRepository reviewFileRepository;
     private final ManagerRepository managerRepository;
     private final CustomerRepository customerRepository;
     private final ContractRepository contractRepository;
@@ -51,16 +54,21 @@ public class ReviewService {
                 context.customer(), context.manager(), contract, context.reviewType()
         ));
 
+        List<String> imgUrls = new ArrayList<>();
         if (imgs != null && !imgs.isEmpty()) {
             // TODO: 이미지 저장 로직 구현
         }
 
-        return review.toDto();
+        return ReviewResponseDto.fromEntity(review, imgUrls);
     }
 
     public Page<ReviewResponseDto> readMyReview(Pageable pageable) {
         Page<Review> reviews = userType.equals("ROLE_USER") ? reviewRepository.findAllReviewByCustomerId(userId, pageable) : reviewRepository.findAllReviewByManagerId(userId, pageable);
-        return reviews.map(Review::toDto);
+
+        return reviews.map(review -> {
+            List<String> fileUrls = reviewFileRepository.findReviewFileByReview(review);
+            return ReviewResponseDto.fromEntity(review, fileUrls);
+        });
     }
 
     private ReviewContext resolveReviewer(WriteReviewRequestDto dto) {
