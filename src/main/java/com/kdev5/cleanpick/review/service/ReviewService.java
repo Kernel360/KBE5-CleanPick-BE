@@ -1,18 +1,17 @@
 package com.kdev5.cleanpick.review.service;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.exception.ContractException;
+import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
-import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import com.kdev5.cleanpick.review.domain.Review;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
-import com.kdev5.cleanpick.review.domain.exception.ReviewException;
+import com.kdev5.cleanpick.review.domain.exception.ReviewDuplicateException;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
 import jakarta.transaction.Transactional;
@@ -41,13 +40,13 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto writeReview(WriteReviewRequestDto dto, List<MultipartFile> imgs) {
-        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_NOT_FOUND));
+        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(ContractNotFoundException::new);
 
         ReviewContext context = resolveReviewer(dto);
 
         // 리뷰 중복 체크
         if (reviewRepository.findReviewByReviewType(contract, context.customer(), context.manager(), context.reviewType()).isPresent())
-            throw new ReviewException(ErrorCode.REVIEW_ALREADY_EXISTS);
+            throw new ReviewDuplicateException();
 
         // 리뷰 저장
         Review review = reviewRepository.save(dto.toEntity(
