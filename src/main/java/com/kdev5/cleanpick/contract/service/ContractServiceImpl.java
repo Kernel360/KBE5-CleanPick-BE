@@ -41,7 +41,7 @@ public class ContractServiceImpl implements ContractService {
     @Transactional
     @Override
     public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
-        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
+//        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
         Customer customer = customerRepository.findById(contractDto.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 고객입니다."));
         Manager manager = null;
