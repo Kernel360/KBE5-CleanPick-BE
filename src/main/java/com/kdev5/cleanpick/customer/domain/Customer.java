@@ -3,8 +3,10 @@ package com.kdev5.cleanpick.customer.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.customer.domain.enumeration.LoginType;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "customer")
 public class Customer extends BaseTimeEntity {
 
