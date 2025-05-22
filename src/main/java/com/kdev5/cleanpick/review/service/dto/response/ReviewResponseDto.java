@@ -1,35 +1,37 @@
 package com.kdev5.cleanpick.review.service.dto.response;
 
 import com.kdev5.cleanpick.review.domain.Review;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
-@Builder
 @Getter
 public class ReviewResponseDto {
-    private long id;
+    private Long id;
     private String targetName;
     private Float rating;
     private String content;
     private List<String> files;
 
+    private ReviewResponseDto(Long id, String targetName, Float rating, String content, List<String> files) {
+        this.id = id;
+        this.targetName = targetName;
+        this.rating = rating;
+        this.content = content;
+        this.files = files;
+    }
 
     public static ReviewResponseDto fromEntity(Review review, List<String> files) {
+        String targetName = review.getType().equals(com.kdev5.cleanpick.review.domain.enumeration.ReviewType.TO_MANAGER)
+                ? review.getManager().getName()
+                : review.getCustomer().getName();
 
-        String targetName = review.getType() == null ? null :
-                review.getType().equals(com.kdev5.cleanpick.review.domain.enumeration.ReviewType.TO_MANAGER)
-                        ? review.getManager().getName()
-                        : review.getCustomer().getName();
-
-
-        return ReviewResponseDto.builder()
-                .id(review.getId())
-                .targetName(targetName)
-                .rating(review.getRating())
-                .content(review.getContent())
-                .files(files)
-                .build();
+        return new ReviewResponseDto(
+                review.getId(),
+                targetName,
+                review.getRating(),
+                review.getContent(),
+                files
+        );
     }
 }

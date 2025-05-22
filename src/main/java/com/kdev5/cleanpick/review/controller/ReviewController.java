@@ -5,6 +5,7 @@ import com.kdev5.cleanpick.global.response.PageResponse;
 import com.kdev5.cleanpick.review.service.ReviewService;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -25,7 +26,7 @@ public class ReviewController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     private ResponseEntity<ApiResponse<ReviewResponseDto>> writeReview(
-            @RequestPart(value = "writeReviewRequestDto") WriteReviewRequestDto dto,
+            @Valid @RequestPart(value = "writeReviewRequestDto") WriteReviewRequestDto dto,
             @RequestPart(value = "imgs", required = false) List<MultipartFile> imgs) {
         return ResponseEntity.ok(ApiResponse.ok(reviewService.writeReview(dto, imgs)));
     }
