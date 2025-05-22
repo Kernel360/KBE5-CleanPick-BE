@@ -21,7 +21,7 @@ public class ContractController {
     }
 
     @PostMapping("/createContract")
-    public ApiResponse<Contract> createContract(@RequestBody ContractRequestDto contractDto) {
+    public ApiResponse<Contract> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
         Contract newContract = contractService.createContract(contractDto);
         return ApiResponse.ok(newContract);
     }

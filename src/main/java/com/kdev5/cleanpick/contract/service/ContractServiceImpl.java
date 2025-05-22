@@ -11,6 +11,7 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +28,10 @@ public class ContractServiceImpl implements ContractService {
     private final ManagerRepository managerRepository;
     private final CleaningRepository cleaningRepository;
 
-
+    @Transactional
     @Override
     public Contract createContract(ContractRequestDto contractDto){
-        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
+//        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
         Customer customer = customerRepository.findById(contractDto.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 고객입니다."));
         Manager manager = null;
@@ -47,20 +48,20 @@ public class ContractServiceImpl implements ContractService {
 
         Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 청소 서비스 입니다."));
-        System.out.println(contractDto.getAddress());
 
-        Contract newContract = new Contract();
-        newContract.setCustomer(customer);
-        newContract.setManager(manager);
-        newContract.setCleaning(cleaning);
-        newContract.setRoutineContract(routineContract);
-        newContract.setContractDate(contractDto.getContractDate());
-        newContract.setAddress(contractDto.getAddress());
-        newContract.setTotalPrice(contractDto.getTotalPrice());
-        newContract.setTotalTime(contractDto.getTotalTime());
-        newContract.setPersonal(contractDto.isPersonal());
-
-        return contractRepository.save(newContract);
+        return contractRepository.save(
+                Contract.builder()
+                        .customer(customer)
+                        .manager(manager)
+                        .cleaning(cleaning)
+                        .routineContract(routineContract)
+                        .contractDate(contractDto.getContractDate())
+                        .address(contractDto.getAddress())
+                        .totalPrice(contractDto.getTotalPrice())
+                        .totalTime(contractDto.getTotalTime())
+                        .personal(contractDto.isPersonal())
+                        .build()
+        );
     }
 
 }

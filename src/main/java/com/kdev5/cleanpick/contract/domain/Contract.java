@@ -5,8 +5,7 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "contract")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contract extends BaseTimeEntity {
 
     @Id
@@ -50,4 +50,16 @@ public class Contract extends BaseTimeEntity {
     @Column(name="is_personal", nullable = false)
     private boolean personal;
 
+    @Builder
+    public Contract(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal) {
+        this.customer = customer;
+        this.manager = manager;
+        this.cleaning = cleaning;
+        this.routineContract = routineContract;
+        this.contractDate = contractDate;
+        this.address = address;
+        this.totalPrice = totalPrice;
+        this.totalTime = totalTime;
+        this.personal = personal;
+    }
 }
