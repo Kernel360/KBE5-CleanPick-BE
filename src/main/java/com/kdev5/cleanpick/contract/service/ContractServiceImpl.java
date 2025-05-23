@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.contract.service;
 
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
+import com.kdev5.cleanpick.cleaning.domain.exception.CleaningNotFoundException;
 import com.kdev5.cleanpick.cleaning.infra.CleaningOptionRepository;
 import com.kdev5.cleanpick.cleaning.infra.CleaningRepository;
 import com.kdev5.cleanpick.contract.domain.Contract;
@@ -10,11 +11,14 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
+import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.dto.ContractRequestDto;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
 import com.kdev5.cleanpick.manager.domain.Manager;
+import com.kdev5.cleanpick.manager.domain.exception.ManagerNotFoundException;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -42,22 +46,19 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
 //        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
-        Customer customer = customerRepository.findById(contractDto.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 고객입니다."));
+        Customer customer = customerRepository.findById(contractDto.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
         Manager manager = null;
         if (contractDto.getManagerId() != null) {
             manager = managerRepository.findById(contractDto.getManagerId())
-                    .orElseThrow(() -> new RuntimeException("존재하지 않는 매니저 입니다."));
+                    .orElseThrow(ManagerNotFoundException::new);
         }
 
         RoutineContract routineContract = null;
         if ( contractDto.getRoutineContractId() != null ){
-            routineContract = routineContractRepository.findById(contractDto.getRoutineContractId())
-                    .orElseThrow(() -> new RuntimeException("존재하지 않는 예약 입니다."));
+            routineContract = routineContractRepository.findById(contractDto.getRoutineContractId()).orElseThrow(ContractNotFoundException::new);
         }
 
-        Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId())
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 청소 서비스 입니다."));
+        Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId()).orElseThrow(CleaningNotFoundException::new);
 
         // contract - 예약 정보 저장
         Contract newContract = Contract.builder()
