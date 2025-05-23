@@ -2,14 +2,20 @@ package com.kdev5.cleanpick.review.domain;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import jakarta.persistence.*;
-import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "review")
-public class Review extends BaseTimeEntity{
+public class Review extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +41,13 @@ public class Review extends BaseTimeEntity{
     @Column(nullable = false)
     private ReviewType type;
 
+    @Builder
+    public Review(Customer customer, Manager manager, Contract contract, float rating, String content, ReviewType type) {
+        this.customer = customer;
+        this.manager = manager;
+        this.contract = contract;
+        this.rating = rating;
+        this.content = content;
+        this.type = type;
+    }
 }
