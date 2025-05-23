@@ -17,7 +17,7 @@ public class ContractDetail {
     private Long contractId;
 
     @MapsId
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id")
     private Contract contract;
 
@@ -47,6 +47,11 @@ public class ContractDetail {
         this.status = status;
         this.request = request;
         this.housingType = housingType;
+    }
+
+    // 예약 상태 변경 (작업전, 작업후, 정산전, 정산완료)
+    public void updateStatus(ContractStatus status) {
+        this.status = status;
     }
 
 }
