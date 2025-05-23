@@ -43,52 +43,68 @@ public class ContractServiceImpl implements ContractService {
     private final CleaningRepository cleaningRepository;
     private final CleaningOptionRepository cleaningOptionRepository;
 
+    // Entity 조회
+    public Customer findCustomer(Long customerId){
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
+    }
+
+    public Manager findManagerIfPresent(Long managerId){
+        if (managerId == null) return null;
+        return managerRepository.findById(managerId)
+                .orElseThrow(()-> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
+    }
+
+    public RoutineContract findRoutineContractIfPresent(Long routineContractId){
+        if (routineContractId == null) return null;
+        return routineContractRepository.findById(routineContractId)
+                .orElseThrow(()-> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
+    }
+
+    public Cleaning findCleaning(Long cleaningId){
+        return cleaningRepository.findById(cleaningId)
+                .orElseThrow(()-> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
+    }
+
+    // Contract 엔티티 저장
+    public Contract saveContract(ContractRequestDto dto, Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
+        return contractRepository.save(dto.toEntity(customer, manager, cleaning, routineContract));
+    }
+
+    // ContractDetail 엔티티 저장
+    public ContractDetail saveContactDetail(ContractRequestDto dto, Contract newContract) {
+        dto.setStatus(ContractStatus.작업전);
+        return contractDetailRepository.save(dto.toEntity(newContract));
+    }
+
+    // ContractOptions 저장
+    public void saveContractOptions(ContractRequestDto dto, Contract contract) {
+        for (Long optionId : dto.getCleaningOptionList()) {
+            CleaningOption cleaningOption = cleaningOptionRepository.findById(optionId)
+                    .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
+
+            contractOptionRepository.save(dto.toOptionEntity(contract, cleaningOption));
+        }
+    }
+
 
     // 1회성 청소 요청글 작성
     @Transactional
     @Override
     public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
-//        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
-        Customer customer = customerRepository.findById(contractDto.getCustomerId())
-                .orElseThrow(() -> new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
-        Manager manager = null;
-
-        if (contractDto.getManagerId() != null) {
-            manager = managerRepository.findById(contractDto.getManagerId())
-                    .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
-        }
-
-        RoutineContract routineContract = null;
-        if ( contractDto.getRoutineContractId() != null ){
-            routineContract = routineContractRepository.findById(contractDto.getRoutineContractId())
-                    .orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
-        }
-
-        Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId())
-                .orElseThrow(() -> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
+        Customer customer = findCustomer(contractDto.getCustomerId());
+        Manager manager = findManagerIfPresent(contractDto.getManagerId());
+        RoutineContract routineContract = findRoutineContractIfPresent(contractDto.getRoutineContractId());
+        Cleaning cleaning = findCleaning(contractDto.getCleaningId());
 
         // contract - 예약 정보 저장
-        Contract newContract = contractRepository.save(
-                contractDto.toEntity(customer, manager, cleaning, routineContract)
-        );
+        Contract newContract = saveContract(contractDto, customer, manager, cleaning, routineContract);
 
         // contract_detail - 예약 상세 정보 저장
-        contractDto.setStatus(ContractStatus.작업전); // 새로 작성한 예약글이므로 contractDeatil.status 작업전으로 설정
-        ContractDetail newContractDetail = contractDetailRepository.save(
-                contractDto.toEntity(newContract)
-        );
+        ContractDetail newContractDetail = saveContactDetail(contractDto, newContract);
 
         // contract_option - 청소 요구사항 정보 저장
-        List<Long> cleaningOptionList = contractDto.getCleaningOptionList();
-        for ( int i = 0; i < cleaningOptionList.size() ; i++ ){
-            CleaningOption cleaningOption = cleaningOptionRepository.findById(cleaningOptionList.get(i))
-                    .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
-
-            ContractOption newContractOption = contractOptionRepository.save(
-                    contractDto.toOptionEntity(newContract, cleaningOption)
-            );
-
-        }
+        saveContractOptions(contractDto, newContract);
 
         return contractDto;
     }
