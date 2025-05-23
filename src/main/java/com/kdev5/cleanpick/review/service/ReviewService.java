@@ -5,6 +5,7 @@ import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
+import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
@@ -40,7 +41,8 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto writeReview(WriteReviewRequestDto dto, List<MultipartFile> imgs) {
-        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(ContractNotFoundException::new);
+        Contract contract = contractRepository.findById(dto.getContractId())
+                .orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ReviewContext context = resolveReviewer(dto);
 
