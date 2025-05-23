@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
-@Builder
 public class ContractRequestDto {
 
     //contract, contract_detail, contract_option, routine_contract
@@ -91,4 +89,33 @@ public class ContractRequestDto {
     @JsonProperty("day")
     private String day; // JSON 문자열 (예: ["MON", "WED", "FRI"])
 
+    public ContractRequestDto(Long customerId, Long managerId, Long routineContractId, Long cleaningId, LocalDateTime contractDate, int totalPrice, String address, int totalTime, LocalDateTime checkIn, boolean personal, LocalDateTime checkOut, String housingType, Long contractId, String pet, ContractStatus status, String request, List<Long> cleaningOptionList, float discountRate, LocalDateTime contractStartDate, LocalDateTime startTime, int routineCount, LocalDateTime time, String day) {
+        this.customerId = customerId;
+        this.managerId = managerId;
+        this.routineContractId = routineContractId;
+        this.cleaningId = cleaningId;
+        this.contractDate = contractDate;
+        this.totalPrice = totalPrice;
+        this.address = address;
+        this.totalTime = totalTime;
+        this.checkIn = checkIn;
+        this.personal = personal;
+        this.checkOut = checkOut;
+        this.housingType = housingType;
+        this.contractId = contractId;
+        this.pet = pet;
+        this.status = status;
+        this.request = request;
+        this.cleaningOptionList = cleaningOptionList;
+        this.discountRate = discountRate;
+        this.contractStartDate = contractStartDate;
+        this.startTime = startTime;
+        this.routineCount = routineCount;
+        this.time = time;
+        this.day = day;
+    }
+
+    public void setStatus(ContractStatus status) {
+        this.status = status;
+    }
 }
