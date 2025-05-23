@@ -21,7 +21,7 @@ public class ContractController {
     private final ContractService contractService;
 
     // 1. 청소 요청 글 작성
-    // 1-1. 단기 청소
+    // 1-1. 1회성 청소
     @PostMapping("/one")
     public ApiResponse<ContractRequestDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
         ContractRequestDto newContract = contractService.createOneContract(contractDto);

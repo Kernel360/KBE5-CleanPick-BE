@@ -44,6 +44,7 @@ public class ContractServiceImpl implements ContractService {
     private final CleaningOptionRepository cleaningOptionRepository;
 
 
+    // 1회성 청소 요청글 작성
     @Transactional
     @Override
     public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
@@ -51,6 +52,7 @@ public class ContractServiceImpl implements ContractService {
         Customer customer = customerRepository.findById(contractDto.getCustomerId())
                 .orElseThrow(() -> new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
         Manager manager = null;
+
         if (contractDto.getManagerId() != null) {
             manager = managerRepository.findById(contractDto.getManagerId())
                     .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
@@ -66,31 +68,15 @@ public class ContractServiceImpl implements ContractService {
                 .orElseThrow(() -> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
 
         // contract - 예약 정보 저장
-        Contract newContract = Contract.builder()
-                .customer(customer)
-                .manager(manager)
-                .cleaning(cleaning)
-                .routineContract(routineContract)
-                .contractDate(contractDto.getContractDate())
-                .address(contractDto.getAddress())
-                .totalPrice(contractDto.getTotalPrice())
-                .totalTime(contractDto.getTotalTime())
-                .personal(contractDto.isPersonal())
-                .build();
-
-        contractRepository.save(newContract);
+        Contract newContract = contractRepository.save(
+                contractDto.toEntity(customer, manager, cleaning, routineContract)
+        );
 
         // contract_detail - 예약 상세 정보 저장
         contractDto.setStatus(ContractStatus.작업전); // 새로 작성한 예약글이므로 contractDeatil.status 작업전으로 설정
-        ContractDetail newContractDetail = ContractDetail.builder()
-                .contract(newContract)
-                .housingType(contractDto.getHousingType())
-                .pet(contractDto.getPet())
-                .request(contractDto.getRequest())
-                .status(contractDto.getStatus())
-                .build();
-
-        contractDetailRepository.save(newContractDetail);
+        ContractDetail newContractDetail = contractDetailRepository.save(
+                contractDto.toEntity(newContract)
+        );
 
         // contract_option - 청소 요구사항 정보 저장
         List<Long> cleaningOptionList = contractDto.getCleaningOptionList();
@@ -98,17 +84,17 @@ public class ContractServiceImpl implements ContractService {
             CleaningOption cleaningOption = cleaningOptionRepository.findById(cleaningOptionList.get(i))
                     .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
 
-            ContractOption newContractOption = ContractOption.builder()
-                    .contract(newContract)
-                    .cleaningOption(cleaningOption)
-                    .build();
+            ContractOption newContractOption = contractOptionRepository.save(
+                    contractDto.toOptionEntity(newContract, cleaningOption)
+            );
 
-            contractOptionRepository.save(newContractOption);
         }
 
         return contractDto;
     }
 
+
+    // 정기 청소 요청글 작성
     @Transactional
     @Override
     public RoutineContract createRoutineContract(@Valid ContractRequestDto routinecontractDto){

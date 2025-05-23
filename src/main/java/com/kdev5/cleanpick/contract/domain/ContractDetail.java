@@ -38,9 +38,9 @@ public class ContractDetail {
     private String housingType;
 
     @Builder
-    public ContractDetail(Contract contract, Long contractId, LocalDateTime checkIn, LocalDateTime checkOut, String pet, ContractStatus status, String request, String housingType) {
+    public ContractDetail(Contract contract, LocalDateTime checkIn, LocalDateTime checkOut, String pet, ContractStatus status, String request, String housingType) {
         this.contract = contract;
-        this.contractId = contractId;
+//        this.contractId = contractId; 알아서 매핑된다
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.pet = pet;
