@@ -39,3 +39,5 @@ out/
 .vscode/
 
 application.yml
+### QueryDSL generated Q classes ###
+/src/main/generated/

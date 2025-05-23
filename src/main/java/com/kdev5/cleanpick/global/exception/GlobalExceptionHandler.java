@@ -26,9 +26,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("예외 발생: MethodArgumentNotValidException - {}", e.getMessage());
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+
+        List<ValidationError> validationErrors = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new ValidationError(error.getField(), error.getRejectedValue(), error.getDefaultMessage()))
+                .toList();
         ErrorCode errorCode = ErrorCode.VALIDATION_FAIL;
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode, fieldErrors));
+                .body(ApiResponse.error(errorCode, validationErrors));
     }
+
+    public record ValidationError(String field, Object rejectedValue, String message) {
+    }
+
 }
