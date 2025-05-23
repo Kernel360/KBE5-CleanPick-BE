@@ -4,6 +4,7 @@ package com.kdev5.cleanpick.contract.service;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
 import com.kdev5.cleanpick.cleaning.domain.exception.CleaningNotFoundException;
+import com.kdev5.cleanpick.cleaning.domain.exception.CleaningOptionNotFoundException;
 import com.kdev5.cleanpick.cleaning.infra.CleaningOptionRepository;
 import com.kdev5.cleanpick.cleaning.infra.CleaningRepository;
 import com.kdev5.cleanpick.contract.domain.Contract;
@@ -17,6 +18,7 @@ import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
+import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.domain.exception.ManagerNotFoundException;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
@@ -46,19 +48,22 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
 //        System.out.println("사용자 아이디 : " + (contractDto.getCustomerId() != null ? contractDto.getCustomerId() : "값 없음"));
-        Customer customer = customerRepository.findById(contractDto.getCustomerId()).orElseThrow(CustomerNotFoundException::new);
+        Customer customer = customerRepository.findById(contractDto.getCustomerId())
+                .orElseThrow(() -> new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
         Manager manager = null;
         if (contractDto.getManagerId() != null) {
             manager = managerRepository.findById(contractDto.getManagerId())
-                    .orElseThrow(ManagerNotFoundException::new);
+                    .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
         }
 
         RoutineContract routineContract = null;
         if ( contractDto.getRoutineContractId() != null ){
-            routineContract = routineContractRepository.findById(contractDto.getRoutineContractId()).orElseThrow(ContractNotFoundException::new);
+            routineContract = routineContractRepository.findById(contractDto.getRoutineContractId())
+                    .orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
         }
 
-        Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId()).orElseThrow(CleaningNotFoundException::new);
+        Cleaning cleaning = cleaningRepository.findById(contractDto.getCleaningId())
+                .orElseThrow(() -> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
 
         // contract - 예약 정보 저장
         Contract newContract = Contract.builder()
@@ -91,7 +96,7 @@ public class ContractServiceImpl implements ContractService {
         List<Long> cleaningOptionList = contractDto.getCleaningOptionList();
         for ( int i = 0; i < cleaningOptionList.size() ; i++ ){
             CleaningOption cleaningOption = cleaningOptionRepository.findById(cleaningOptionList.get(i))
-                    .orElseThrow(() -> new RuntimeException("존재 하지 않는 청소 요구사항입니다."));
+                    .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
 
             ContractOption newContractOption = ContractOption.builder()
                     .contract(newContract)

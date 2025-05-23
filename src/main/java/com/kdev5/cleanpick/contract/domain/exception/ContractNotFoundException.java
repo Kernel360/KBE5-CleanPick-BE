@@ -4,7 +4,7 @@ import com.kdev5.cleanpick.global.exception.BaseException;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
 
 public class ContractNotFoundException extends BaseException {
-    public ContractNotFoundException() {
-        super(ErrorCode.CONTRACT_NOT_FOUND);
+    public ContractNotFoundException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

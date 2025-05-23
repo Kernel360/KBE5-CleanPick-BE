@@ -12,7 +12,8 @@ public enum ErrorCode {
     MANAGER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MANAGER_NOT_FOUND", "존재하지 않는 매니저입니다."),
     CLEANING_NOT_FOUND(HttpStatus.BAD_REQUEST, "CLEANING_NOT_FOUND", "존재하지 않는 청소입니다."),
     CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다."),
-    REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST , "REVIEW_ALREADY_EXISTS", "<UNK> <UNK> <UNK>." ),;
+    REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST , "REVIEW_ALREADY_EXISTS", "존재하지 않는 리뷰입니다." ),
+    CLEANING_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST , "CLEANING_OPTION_NOT_FOUND", "존재하지 않는 청소 요구사항입니다."),;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
