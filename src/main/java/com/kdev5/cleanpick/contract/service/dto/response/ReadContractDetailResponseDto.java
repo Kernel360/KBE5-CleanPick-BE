@@ -71,7 +71,7 @@ public class ReadContractDetailResponseDto {
                 .totalTime(contractDetail.getContract().getTotalTime())
                 .address(contractDetail.getContract().getAddress())
                 .totalPrice(contractDetail.getContract().getTotalPrice())
-                .contractStatus(contractDetail.getStatus().name())
+                .contractStatus(contractDetail.getContract().getStatus().name())
                 .petInfo(contractDetail.getPet())
                 .requestMessage(contractDetail.getRequest())
                 .housingType(contractDetail.getHousingType())

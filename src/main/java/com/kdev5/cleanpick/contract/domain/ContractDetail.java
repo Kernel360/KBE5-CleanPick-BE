@@ -1,6 +1,5 @@
 package com.kdev5.cleanpick.contract.domain;
 
-import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -22,10 +21,6 @@ public class ContractDetail {
 
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContractStatus status;
 
     @Column(length = 50)
     private String pet;
