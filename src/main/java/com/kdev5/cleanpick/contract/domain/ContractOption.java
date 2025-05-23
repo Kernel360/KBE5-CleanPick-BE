@@ -3,8 +3,10 @@ package com.kdev5.cleanpick.contract.domain;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(
         name = "contract_option",
         uniqueConstraints = {
@@ -17,7 +19,7 @@ public class ContractOption extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 

@@ -2,8 +2,10 @@ package com.kdev5.cleanpick.cleaning.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "cleaning")
 public class Cleaning extends BaseTimeEntity {
     @Id

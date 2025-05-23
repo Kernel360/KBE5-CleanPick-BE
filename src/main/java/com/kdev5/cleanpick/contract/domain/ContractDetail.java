@@ -2,10 +2,12 @@ package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Table(name = "contract_detail")
 public class ContractDetail {
 
@@ -14,7 +16,7 @@ public class ContractDetail {
     private Long contractId;
 
     @MapsId
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id")
     private Contract contract;
 

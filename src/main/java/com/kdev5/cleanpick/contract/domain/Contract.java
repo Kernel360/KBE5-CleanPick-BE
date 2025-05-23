@@ -5,10 +5,12 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Table(name = "contract")
 public class Contract extends BaseTimeEntity {
     @Id
@@ -27,7 +29,7 @@ public class Contract extends BaseTimeEntity {
     @JoinColumn(name = "cleaning_id", nullable = false)
     private Cleaning cleaning;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "routine_contract_id")
     private RoutineContract routineContract;
 
@@ -42,7 +44,7 @@ public class Contract extends BaseTimeEntity {
     @Column(nullable = false)
     private int totalTime;
 
-    @Column(name="is_personal", nullable = false )
+    @Column(name = "is_personal", nullable = false)
     private boolean isPersonal;
 
 }
