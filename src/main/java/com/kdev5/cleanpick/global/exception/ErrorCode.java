@@ -11,7 +11,8 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(HttpStatus.BAD_REQUEST, "CONTRACT_NOT_FOUND", "계약을 찾을 수 없습니다."),
     MANAGER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MANAGER_NOT_FOUND", "존재하지 않는 매니저입니다."),
     CLEANING_NOT_FOUND(HttpStatus.BAD_REQUEST, "CLEANING_NOT_FOUND", "존재하지 않는 청소입니다."),
-    CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다.");
+    CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다."),
+    REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST , "REVIEW_ALREADY_EXISTS", "<UNK> <UNK> <UNK>." ),;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
