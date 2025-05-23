@@ -1,4 +1,4 @@
-package com.kdev5.cleanpick.global.config;
+package com.kdev5.cleanpick.global.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
