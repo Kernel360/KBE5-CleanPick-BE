@@ -1,5 +1,8 @@
 package com.kdev5.cleanpick.global.security.jwt;
 
+// TODO
+// params VALUE 화 (SECRET)
+// refresh 토큰 추가되면 EXPIRES_AT 세부 설정하기
 public abstract class JwtParams {
 
     public static final String SECRET = "TEMP";

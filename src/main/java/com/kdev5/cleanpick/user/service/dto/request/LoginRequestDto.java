@@ -7,12 +7,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public final class LocalJoinRequestDto {
+public class LoginRequestDto {
 
     @Email
-    private String email;
+    private final String email;
 
     @NotEmpty
-    private String password;
+    private final String password;
 
 }

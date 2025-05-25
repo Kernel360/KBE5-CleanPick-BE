@@ -3,7 +3,7 @@ package com.kdev5.cleanpick.global.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.kdev5.cleanpick.global.security.auth.principal.CustomUserDetails;
+import com.kdev5.cleanpick.global.security.auth.CustomUserDetails;
 import com.kdev5.cleanpick.user.domain.Role;
 import com.kdev5.cleanpick.user.domain.User;
 
@@ -17,7 +17,7 @@ public class JwtProcessor {
                 .withSubject("CleanPick")
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtParams.EXPIRES_AT))
                 .withClaim("id", loginUser.getId())
-                .withClaim("role", loginUser.getAuthorities() + "")
+                .withClaim("role", loginUser.getRole() + "")
                 .sign(Algorithm.HMAC512(JwtParams.SECRET));
         return JwtParams.PREFIX + jwtToken;
     }

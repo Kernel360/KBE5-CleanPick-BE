@@ -17,6 +17,11 @@ public class Manager extends BaseTimeEntity {
     @Id
     private Long id;
 
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private User user;
+
     @Column(length = 50, nullable = false)
     private String name;
 
@@ -29,9 +34,5 @@ public class Manager extends BaseTimeEntity {
     @Column(name = "profile_message")
     private String profileMessage;
 
-    @MapsId
-    @JoinColumn(name = "id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
 }
 

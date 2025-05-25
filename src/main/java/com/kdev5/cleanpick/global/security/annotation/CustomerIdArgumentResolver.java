@@ -1,11 +1,12 @@
 package com.kdev5.cleanpick.global.security.annotation;
 
+import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
-import com.kdev5.cleanpick.global.security.auth.principal.CustomUserDetails;
-import com.kdev5.cleanpick.global.security.exception.CustomerNotFoundException;
-import com.kdev5.cleanpick.global.security.exception.UnAuthenticatedException;
+import com.kdev5.cleanpick.global.exception.ErrorCode;
+import com.kdev5.cleanpick.global.security.auth.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -27,17 +28,22 @@ public class CustomerIdArgumentResolver implements HandlerMethodArgumentResolver
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(
+            MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory
+    )  {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new UnAuthenticatedException();
+            throw new AuthenticationCredentialsNotFoundException("인증 정보가 존재하지 않습니다.");
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long userId = userDetails.getId();
 
         if (!customerRepository.existsById(userId)) {
-            throw new CustomerNotFoundException();
+            throw new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND);
         }
 
         return userId;

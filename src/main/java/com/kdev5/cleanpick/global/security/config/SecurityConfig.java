@@ -1,8 +1,10 @@
 package com.kdev5.cleanpick.global.security.config;
 
-import com.kdev5.cleanpick.global.security.auth.service.CustomerLoginService;
-import com.kdev5.cleanpick.global.security.auth.service.ManagerLoginService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kdev5.cleanpick.global.security.auth.CustomerLoginService;
+import com.kdev5.cleanpick.global.security.auth.ManagerLoginService;
 import com.kdev5.cleanpick.global.security.filter.JwtLoginAuthenticationFilter;
+import com.kdev5.cleanpick.global.security.filter.JwtTokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,7 @@ public class SecurityConfig {
 
     private final CustomerLoginService customerLoginService;
     private final ManagerLoginService managerLoginService;
-
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -40,8 +42,15 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtLoginAuthenticationFilter("/api/login/customer", customerAuthenticationManger(customerLoginService)), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtLoginAuthenticationFilter("/api/login/manager", managerAuthenticationManager(managerLoginService)), UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers.frameOptions().sameOrigin()) // 배포시 deny h2-console용 임시 허용
+                .addFilterBefore(new JwtTokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtLoginAuthenticationFilter(
+                            customerAuthenticationManger(customerLoginService),
+                            managerAuthenticationManager(managerLoginService),
+                            objectMapper
+                        ),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request ->
@@ -70,7 +79,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
     public AuthenticationManager customerAuthenticationManger(CustomerLoginService customerLoginService) {
         DaoAuthenticationProvider customerProvider = new DaoAuthenticationProvider();
         customerProvider.setUserDetailsService(customerLoginService);
@@ -78,7 +86,6 @@ public class SecurityConfig {
         return new ProviderManager(customerProvider);
     }
 
-    @Bean
     public AuthenticationManager managerAuthenticationManager(ManagerLoginService managerLoginService){
         DaoAuthenticationProvider managerProvider = new DaoAuthenticationProvider();
         managerProvider.setUserDetailsService(managerLoginService);

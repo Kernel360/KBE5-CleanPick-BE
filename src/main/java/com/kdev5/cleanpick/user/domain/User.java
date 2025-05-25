@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
@@ -37,4 +37,5 @@ public class User extends BaseTimeEntity {
         this.loginType = loginType;
         this.role = role;
     }
+
 }

@@ -1,6 +1,5 @@
-package com.kdev5.cleanpick.global.security.auth.principal;
+package com.kdev5.cleanpick.global.security.auth;
 
-import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.user.domain.Role;
 import com.kdev5.cleanpick.user.domain.User;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,7 +35,7 @@ public class CustomUserDetails implements UserDetails {
         return email;
     }
 
-    private CustomUserDetails(Long id, String email, String password, Role role) {
+    public CustomUserDetails(Long id, String email, String password, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;

@@ -1,27 +1,22 @@
 package com.kdev5.cleanpick.global.security.filter;
 
 
-import com.kdev5.cleanpick.global.security.auth.principal.CustomUserDetails;
+import com.kdev5.cleanpick.global.security.auth.CustomUserDetails;
 import com.kdev5.cleanpick.global.security.jwt.JwtParams;
 import com.kdev5.cleanpick.global.security.jwt.JwtProcessor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class JwtTokenAuthenticationFilter extends BasicAuthenticationFilter {
+public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
-
-    public JwtTokenAuthenticationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -38,16 +33,10 @@ public class JwtTokenAuthenticationFilter extends BasicAuthenticationFilter {
         doFilter(request, response, chain);
     }
 
-
-    // TOKEN 이란게 있는지 부터 본다
     private boolean isHeaderVerify(HttpServletRequest request) {
 
-        String authoHeader = request.getHeader(JwtParams.HEADER);
+        String authHeader = request.getHeader(JwtParams.HEADER);
 
-        if (authoHeader == null || !authoHeader.startsWith(JwtParams.PREFIX)) {
-            return false;
-        } else {
-            return true;
-        }
+        return authHeader != null && authHeader.startsWith(JwtParams.PREFIX);
     }
 }
