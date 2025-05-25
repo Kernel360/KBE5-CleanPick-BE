@@ -4,13 +4,14 @@ import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Table(name = "user")
-@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,8 @@ public abstract class User extends BaseTimeEntity {
     private Role role;
 
     @Builder
-    public User(String email, String password, LoginType loginType, Role role) {
+    public User(Long id, String email, String password, LoginType loginType, Role role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.loginType = loginType;

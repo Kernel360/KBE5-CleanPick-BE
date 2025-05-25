@@ -1,8 +1,8 @@
 package com.kdev5.cleanpick.global.security.auth.service;
 
 
-import com.kdev5.cleanpick.global.security.auth.principal.CustomerAuthenticationPrincipal;
-import com.kdev5.cleanpick.global.security.auth.principal.ManagerAuthenticationPrincipal;
+import com.kdev5.cleanpick.global.security.auth.principal.CustomUserDetails;
+import com.kdev5.cleanpick.global.security.exception.UnAuthenticatedException;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.user.domain.Role;
@@ -30,8 +30,11 @@ public class ManagerLoginService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        Manager manager = managerRepository.findByUserId(user.getId()).orElseThrow(() -> new UsernameNotFoundException(username));
+        boolean isExist = managerRepository.existsById(user.getId());
 
-        return ManagerAuthenticationPrincipal.fromEntity(user , manager);
+        if (!isExist) {
+            throw new UnAuthenticatedException();
+        }
+        return CustomUserDetails.fromEntity(user);
     }
 }

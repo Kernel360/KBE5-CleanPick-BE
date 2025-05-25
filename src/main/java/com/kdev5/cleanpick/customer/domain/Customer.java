@@ -9,12 +9,10 @@ import lombok.Getter;
 @Entity
 @Getter
 @Table(name = "customer")
-public class Customer extends User {
+public class Customer extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @Column(length = 50, nullable = false)
     private String name;
@@ -28,6 +26,9 @@ public class Customer extends User {
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
 
-
+    @MapsId
+    @OneToOne
+    @JoinColumn(name = "id")
+    private User user;
 
 }

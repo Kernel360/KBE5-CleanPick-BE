@@ -5,16 +5,16 @@ import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.Fetch;
 
 import java.time.LocalTime;
 
 @Entity
 @Getter
 @Table(name = "manager")
-public class Manager extends User {
+public class Manager extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 50, nullable = false)
@@ -29,5 +29,9 @@ public class Manager extends User {
     @Column(name = "profile_message")
     private String profileMessage;
 
-
+    @MapsId
+    @JoinColumn(name = "id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
 }
+

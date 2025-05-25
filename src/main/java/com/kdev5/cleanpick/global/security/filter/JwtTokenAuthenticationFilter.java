@@ -16,10 +16,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import java.io.IOException;
 
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter { // 모든 요청 다 이 필터를 거친다
+public class JwtTokenAuthenticationFilter extends BasicAuthenticationFilter {
 
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JwtTokenAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
@@ -29,15 +29,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter { // 모�
         if (isHeaderVerify(request)) {
 
             String pureToken = request.getHeader(JwtParams.HEADER).replace(JwtParams.PREFIX, "");
-            CustomUserDetails loginUser = JwtProcessor.verify(pureToken); // 이건 그냥 안에 들어있는 id, role 을 가지고 임시 User 를 만든다. 진짠지는 뒤에 Spring 단에서 판단
+            CustomUserDetails loginUser = JwtProcessor.verify(pureToken);
 
-            // 그 다음에 authentication 에 등록된 유저인지, 그리고 authorization 확인을 위해 권한을 넣는다
-            // 사실 유저를 더 사용하려면, loginUser.getId() 를 통해서 가져와야 하는 부분!
             Authentication authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }
-        // false 일 시 Authentication 객체가 비어서 가기 때문에, Authentication 필요한 요청으로 들어갈 경우 에러를 뿜어주게 된다 알아서..
         doFilter(request, response, chain);
     }
 
@@ -47,7 +44,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter { // 모�
 
         String authoHeader = request.getHeader(JwtParams.HEADER);
 
-        if (authoHeader == null || !authoHeader.startsWith(JwtParams.PREFIX)) { // 보낼 때도 Bearer 붙여야함? ㅋㅋㅋㅋ
+        if (authoHeader == null || !authoHeader.startsWith(JwtParams.PREFIX)) {
             return false;
         } else {
             return true;

@@ -4,27 +4,27 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.user.domain.Role;
 import com.kdev5.cleanpick.user.domain.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 @Getter
-public class CustomerAuthenticationPrincipal implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    private final Long userId;
-    private final Long customerId;
+    private final Long id;
     private final String email;
     private final String password;
     private final Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> "ROLE_" + role);
-        return authorities;
+        return  Collections.singletonList(
+                new SimpleGrantedAuthority("ROLE_" + role)
+        );
     }
 
     @Override
@@ -37,35 +37,14 @@ public class CustomerAuthenticationPrincipal implements UserDetails {
         return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    private CustomerAuthenticationPrincipal(Long userId, Long customerId, String email, String password, Role role) {
-        this.userId = userId;
-        this.customerId = customerId;
+    private CustomUserDetails(Long id, String email, String password, Role role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    public static CustomerAuthenticationPrincipal fromEntity(User user, Customer customer){
-        return new CustomerAuthenticationPrincipal(user.getId(), customer.getId(), user.getEmail(), user.getPassword(), user.getRole());
+    public static CustomUserDetails fromEntity(User user){
+        return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole());
     }
 }

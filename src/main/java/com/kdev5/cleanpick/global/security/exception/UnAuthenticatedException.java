@@ -1,7 +1,10 @@
 package com.kdev5.cleanpick.global.security.exception;
 
-public class UnAuthorizedException extends RuntimeException {
-    public UnAuthorizedException(String message) {
-        super(message);
+import com.kdev5.cleanpick.global.exception.BaseException;
+import com.kdev5.cleanpick.global.exception.ErrorCode;
+
+public class UnAuthenticatedException extends BaseException {
+    public UnAuthenticatedException() {
+        super(ErrorCode.UNAUTHENTICATED_USER);
     }
 }

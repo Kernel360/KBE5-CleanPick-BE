@@ -2,7 +2,8 @@ package com.kdev5.cleanpick.global.security.auth.service;
 
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
-import com.kdev5.cleanpick.global.security.auth.principal.CustomerAuthenticationPrincipal;
+import com.kdev5.cleanpick.global.security.auth.principal.CustomUserDetails;
+import com.kdev5.cleanpick.global.security.exception.UnAuthenticatedException;
 import com.kdev5.cleanpick.user.domain.Role;
 import com.kdev5.cleanpick.user.domain.User;
 import com.kdev5.cleanpick.user.infra.UserRepository;
@@ -28,8 +29,12 @@ public class CustomerLoginService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        Customer customer = customerRepository.findByUserId(user.getId()).orElseThrow(() -> new UsernameNotFoundException(username));
+        boolean isExist = customerRepository.existsById(user.getId());
 
-        return CustomerAuthenticationPrincipal.fromEntity(user , customer);
+        if (!isExist) {
+            throw new UnAuthenticatedException();
+        }
+
+        return CustomUserDetails.fromEntity(user);
     }
 }
