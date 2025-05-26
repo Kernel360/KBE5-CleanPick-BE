@@ -14,6 +14,7 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import lombok.Getter;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -92,8 +93,8 @@ public class ContractRequestDto {
     @JsonProperty("time")
     private LocalDateTime time;
 
-    @JsonProperty("day")
-    private String day; // JSON 문자열 (예: ["MON", "WED", "FRI"])
+    @JsonProperty("day_of_week")
+    private List<DayOfWeek> dayOfWeek; // JSON 문자열 (예: ["MON", "WED", "FRI"])
 
 
     public Contract toEntity(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract){
@@ -129,9 +130,23 @@ public class ContractRequestDto {
                 .build();
     }
 
+    public RoutineContract toEntity(){
+        return RoutineContract.builder()
+                .discountRate(discountRate)
+                .contractStartDate(contractStartDate)
+                .routineCount(routineCount)
+                .startTime(startTime)
+                .time(time)
+                .dayOfWeek(dayOfWeek)
+                .build();
+    }
+
 
     public void setStatus(ContractStatus status) {
         this.status = status;
     }
 
+    public void setContractDate(LocalDateTime contractDate) {
+        this.contractDate = contractDate;
+    }
 }

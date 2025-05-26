@@ -30,20 +30,9 @@ public class ContractController {
 
     // 1-2. 정기 청소
     @PostMapping("/routine")
-    public ApiResponse<List<ContractRequestDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractRequestDto) {
-        RoutineContract newRoutineContract = contractService.createRoutineContract(contractRequestDto);
-        List<ContractRequestDto> newContractList = new ArrayList<>();
-
-        // startTime을 기준으로 각 예약 DTO에 ContractDate 부여
-        LocalDateTime currDate = contractRequestDto.getStartTime();
-        for ( int i = 0 ; i < contractRequestDto.getRoutineCount() ; i++ ){
-//            contractRequestDto.setContractDate(currDate);
-            ContractRequestDto singleContract = contractService.createOneContract(contractRequestDto);
-            newContractList.add(singleContract);
-            currDate = currDate.plusDays(1);
-        }
-
-        return ApiResponse.ok(newContractList);
+    public ApiResponse<ContractRequestDto> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        ContractRequestDto newContract = contractService.createRoutineContract(contractDto);
+        return ApiResponse.ok(newContract);
     }
 
 
