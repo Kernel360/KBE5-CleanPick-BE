@@ -1,9 +1,6 @@
 package com.kdev5.cleanpick.contract.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
 import com.kdev5.cleanpick.cleaning.domain.exception.CleaningNotFoundException;
@@ -15,7 +12,8 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
-import com.kdev5.cleanpick.contract.dto.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
@@ -34,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -85,13 +82,17 @@ public class ContractServiceImpl implements ContractService {
     }
 
     // ContractOptions 저장
-    public void saveContractOptions(ContractRequestDto dto, Contract contract) {
+    public List<Long> saveContractOptions(ContractRequestDto dto, Contract contract) {
+        List<Long> cleaningOptions = new ArrayList<>();
         for (Long optionId : dto.getCleaningOptionList()) {
             CleaningOption cleaningOption = cleaningOptionRepository.findById(optionId)
                     .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
 
+            cleaningOptions.add(cleaningOption.getId());
             contractOptionRepository.save(dto.toOptionEntity(contract, cleaningOption));
         }
+
+        return cleaningOptions;
     }
 
     // RoutineContract 저장
@@ -103,7 +104,7 @@ public class ContractServiceImpl implements ContractService {
     // 1회성 청소 요청글 작성
     @Transactional
     @Override
-    public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto){
+    public ContractResponseDto createOneContract(@Valid ContractRequestDto contractDto){
         Customer customer = findCustomer(contractDto.getCustomerId());
         Manager manager = findManagerIfPresent(contractDto.getManagerId());
         RoutineContract routineContract = findRoutineContractIfPresent(contractDto.getRoutineContractId());
@@ -116,9 +117,9 @@ public class ContractServiceImpl implements ContractService {
         ContractDetail newContractDetail = saveContactDetail(contractDto, newContract);
 
         // contract_option - 청소 요구사항 정보 저장
-        saveContractOptions(contractDto, newContract);
+        List<Long> cleaningOptions = saveContractOptions(contractDto, newContract);
 
-        return contractDto;
+        return ContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
     }
 
 

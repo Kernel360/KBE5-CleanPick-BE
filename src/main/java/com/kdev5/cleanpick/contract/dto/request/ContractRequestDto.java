@@ -1,5 +1,4 @@
-package com.kdev5.cleanpick.contract.dto;
-
+package com.kdev5.cleanpick.contract.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
@@ -9,7 +8,6 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
-
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import lombok.Getter;
@@ -150,3 +148,4 @@ public class ContractRequestDto {
         this.contractDate = contractDate;
     }
 }
+

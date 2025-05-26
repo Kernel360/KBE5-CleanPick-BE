@@ -1,16 +1,13 @@
 package com.kdev5.cleanpick.contract.controller;
 
-import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.RoutineContract;
-import com.kdev5.cleanpick.contract.dto.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,16 +20,17 @@ public class ContractController {
     // 1. 청소 요청 글 작성
     // 1-1. 1회성 청소
     @PostMapping("/one")
-    public ApiResponse<ContractRequestDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        ContractRequestDto newContract = contractService.createOneContract(contractDto);
+    public ApiResponse<ContractResponseDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        ContractResponseDto newContract = contractService.createOneContract(contractDto);
         return ApiResponse.ok(newContract);
     }
 
     // 1-2. 정기 청소
     @PostMapping("/routine")
-    public ApiResponse<ContractRequestDto> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
+    public ApiResponse<List<ContractRequestDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
         ContractRequestDto newContract = contractService.createRoutineContract(contractDto);
-        return ApiResponse.ok(newContract);
+//        return ApiResponse.ok(newContract);
+        return null;
     }
 
 
