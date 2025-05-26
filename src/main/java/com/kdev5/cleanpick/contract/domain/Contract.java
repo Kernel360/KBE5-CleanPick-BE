@@ -55,11 +55,7 @@ public class Contract extends BaseTimeEntity {
     private int totalTime;
 
     @Column(name = "is_personal", nullable = false)
-    private boolean isPersonal;
-
-    @Column(name = "is_personal", nullable = false)
     private boolean personal;
-
 
     @Builder
     public Contract(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, ContractStatus status) {
