@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "cleaning")
 @Getter
+@Table(name = "cleaning")
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cleaning extends BaseTimeEntity {
