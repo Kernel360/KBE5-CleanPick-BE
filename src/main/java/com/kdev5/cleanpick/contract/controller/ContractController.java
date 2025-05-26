@@ -27,10 +27,10 @@ public class ContractController {
 
     // 1-2. 정기 청소
     @PostMapping("/routine")
-    public ApiResponse<List<ContractRequestDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        ContractRequestDto newContract = contractService.createRoutineContract(contractDto);
+    public ApiResponse<List<ContractResponseDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        List<ContractResponseDto> newContracts = contractService.createRoutineContract(contractDto);
 //        return ApiResponse.ok(newContract);
-        return null;
+        return ApiResponse.ok(newContracts);
     }
 
 

@@ -142,7 +142,9 @@ public class ContractServiceImpl implements ContractService {
     // 정기 청소 요청글 작성
     @Transactional
     @Override
-    public ContractRequestDto createRoutineContract(@Valid ContractRequestDto routinecontractDto){
+    public List<ContractResponseDto> createRoutineContract(@Valid ContractRequestDto routinecontractDto){
+
+        List<ContractResponseDto> contractResponseDtoList = new ArrayList<>();
 
         // 정기 예약 정보 저장
         RoutineContract newRoutineContract = saveRoutineContract(routinecontractDto);
@@ -168,20 +170,19 @@ public class ContractServiceImpl implements ContractService {
             routinecontractDto.setStatus(ContractStatus.작업전);
             routinecontractDto.setContractDate(date);
 
-            RoutineContract routineContract = findRoutineContractIfPresent(routinecontractDto.getRoutineContractId());
-
             // contract - 예약 정보 저장
-            Contract newContract = saveContract(routinecontractDto, customer, manager, cleaning, routineContract);
+            Contract newContract = saveContract(routinecontractDto, customer, manager, cleaning, newRoutineContract);
 
             // contract_detail - 예약 상세 정보 저장
             ContractDetail newContractDetail = saveContactDetail(routinecontractDto, newContract);
 
             // contract_option - 청소 요구사항 정보 저장
-            saveContractOptions(routinecontractDto, newContract);
+            List<Long> cleaningOptions = saveContractOptions(routinecontractDto, newContract);
+
+            contractResponseDtoList.add(ContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
         }
 
-
-        return routinecontractDto;
+        return contractResponseDtoList;
     }
 
 }
