@@ -36,7 +36,7 @@ public class ReviewService {
 
     // TODO 로그인 연결
     private final Long userId = 1L;
-    private final String userType = "ROLE_USER";
+    private final String userType = "ROLE_MANAGER";
 
 
     @Transactional
