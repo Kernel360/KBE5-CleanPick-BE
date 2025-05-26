@@ -20,9 +20,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +60,9 @@ class ReviewServiceTest {
     private Contract contract;
     private Customer customer;
     private Manager manager;
+
+    private final Long userId = 1L;
+    private final String userType = "ROLE_MANAGER";
 
     //requestDto
     WriteReviewRequestDto reqDto = createRequestDto();
@@ -157,6 +165,32 @@ class ReviewServiceTest {
         assertThatThrownBy(() -> reviewService.writeReview(reqDto, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("존재하지 않는 고객입니다");
+    }
+
+    @Test
+    void 리뷰_조회_성공_ROLE_MANAGER() {
+        // given
+        Review review = Review.builder().content("좋았어요").customer(customer).rating(5).type(ReviewType.TO_USER).build();
+        List<String> fileUrls = List.of("img1.jpg", "img2.jpg");
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+
+        given(reviewRepository.findAllReviewByManagerId(eq(userId), eq(pageable)))
+                .willReturn(new PageImpl<>(List.of(review)));
+
+        given(reviewFileRepository.findReviewFileByReview(review))
+                .willReturn(fileUrls);
+
+        // when
+        Page<ReviewResponseDto> result = reviewService.readMyReview(pageable);
+
+        // then
+        assertThat(result.getContent()).hasSize(1);
+        ReviewResponseDto dto = result.getContent().get(0);
+        assertThat(dto.getContent()).isEqualTo("좋았어요");
+        assertThat(dto.getRating()).isEqualTo(5);
+        assertThat(dto.getFiles()).containsExactlyElementsOf(fileUrls);
     }
 }
 
