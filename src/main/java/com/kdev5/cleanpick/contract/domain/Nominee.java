@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.contract.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
 @Table(name = "nominee")
@@ -21,5 +22,12 @@ public class Nominee extends BaseTimeEntity {
 
     @Column(name = "is_accepted", nullable = false)
     private boolean isAccepted;
+
+    @Builder
+    public Nominee(Contract contract, Manager manager, boolean isAccepted) {
+        this.contract = contract;
+        this.manager = manager;
+        this.isAccepted = isAccepted;
+    }
 }
 

@@ -2,12 +2,15 @@ package com.kdev5.cleanpick.cleaning.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Getter
 @Table(name = "cleaning")
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cleaning extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,4 +20,10 @@ public class Cleaning extends BaseTimeEntity {
 
     @Lob
     private String content;
+
+    @Builder
+    public Cleaning(String serviceName, String content) {
+        this.serviceName = serviceName;
+        this.content = content;
+    }
 }

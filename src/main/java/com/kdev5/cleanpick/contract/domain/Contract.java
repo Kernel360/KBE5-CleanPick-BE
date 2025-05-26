@@ -6,14 +6,19 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "contract")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contract extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,4 +57,21 @@ public class Contract extends BaseTimeEntity {
     @Column(name = "is_personal", nullable = false)
     private boolean isPersonal;
 
+    @Column(name = "is_personal", nullable = false)
+    private boolean personal;
+
+
+    @Builder
+    public Contract(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, ContractStatus status) {
+        this.customer = customer;
+        this.manager = manager;
+        this.cleaning = cleaning;
+        this.routineContract = routineContract;
+        this.contractDate = contractDate;
+        this.address = address;
+        this.totalPrice = totalPrice;
+        this.totalTime = totalTime;
+        this.personal = personal;
+        this.status = status;
+    }
 }

@@ -3,10 +3,15 @@ package com.kdev5.cleanpick.contract.domain;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "contract_option",
         uniqueConstraints = {
@@ -26,4 +31,10 @@ public class ContractOption extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "cleaning_option_id", nullable = false)
     private CleaningOption cleaningOption;
+
+    @Builder
+    public ContractOption(Contract contract, CleaningOption cleaningOption) {
+        this.contract = contract;
+        this.cleaningOption = cleaningOption;
+    }
 }

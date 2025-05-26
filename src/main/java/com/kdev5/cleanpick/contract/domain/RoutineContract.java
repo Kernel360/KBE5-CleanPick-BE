@@ -2,14 +2,17 @@ package com.kdev5.cleanpick.contract.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import net.minidev.json.JSONArray;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "routine_contract")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoutineContract extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,5 +34,16 @@ public class RoutineContract extends BaseTimeEntity {
 
     @Column(name = "day", nullable = false, columnDefinition = "json")
     private String day;
+
+
+    @Builder
+    public RoutineContract(float discountRate, LocalDateTime contractStartDate, int routineCount, LocalDateTime startTime, String day, LocalDateTime time) {
+        this.discountRate = discountRate;
+        this.contractStartDate = contractStartDate;
+        this.routineCount = routineCount;
+        this.startTime = startTime;
+        this.day = day;
+        this.time = time;
+    }
 
 }

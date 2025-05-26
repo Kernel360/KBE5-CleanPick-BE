@@ -1,13 +1,17 @@
 package com.kdev5.cleanpick.contract.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "contract_detail")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContractDetail {
 
     @Id
@@ -20,6 +24,7 @@ public class ContractDetail {
     private Contract contract;
 
     private LocalDateTime checkIn;
+
     private LocalDateTime checkOut;
 
     @Column(length = 50)
@@ -29,5 +34,15 @@ public class ContractDetail {
 
     @Column(length = 50, nullable = false)
     private String housingType;
+
+    @Builder
+    public ContractDetail(Contract contract, LocalDateTime checkIn, LocalDateTime checkOut, String pet, String request, String housingType) {
+        this.contract = contract;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.pet = pet;
+        this.request = request;
+        this.housingType = housingType;
+    }
 
 }
