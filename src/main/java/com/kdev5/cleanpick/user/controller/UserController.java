@@ -28,8 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/signup/manager")
-    private ResponseEntity<ApiResponse<UserResponseDto>> registerManager(@Valid @RequestBody SignUpRequestDto customerSignUpRequestDto) {
-        UserResponseDto response = userService.customerSignUp(customerSignUpRequestDto);
+    private ResponseEntity<ApiResponse<UserResponseDto>> registerManager(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        UserResponseDto response = userService.managerSignup(signUpRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(ApiResponse.ok(response));

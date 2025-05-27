@@ -41,3 +41,6 @@ out/
 application.yml
 ### QueryDSL generated Q classes ###
 /src/main/generated/
+/src/main/java/com/kdev5/cleanpick/dev
+
+Dockerfile
