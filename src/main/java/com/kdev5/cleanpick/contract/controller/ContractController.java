@@ -28,7 +28,6 @@ public class ContractController {
     @PostMapping("/routine")
     public ApiResponse<RoutineContractResponseDto> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
         RoutineContractResponseDto newContracts = contractService.createRoutineContract(contractDto);
-//        return ApiResponse.ok(newContract);
         return ApiResponse.ok(newContracts);
     }
 
