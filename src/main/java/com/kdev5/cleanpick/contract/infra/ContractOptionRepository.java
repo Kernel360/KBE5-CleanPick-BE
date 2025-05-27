@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ContractOptionRepository extends JpaRepository<ContractOption, Long>, ContractOptionRepositoryCustom {
+public interface ContractOptionRepository extends JpaRepository<ContractOption, Long> , ContractOptionRepositoryCustom {
 }

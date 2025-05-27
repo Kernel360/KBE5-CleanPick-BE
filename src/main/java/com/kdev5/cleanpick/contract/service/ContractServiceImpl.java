@@ -11,8 +11,10 @@ import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
+import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.domain.exception.ContractException;
-import com.kdev5.cleanpick.contract.dto.ContractRequestDto;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
@@ -25,6 +27,12 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,32 +71,41 @@ public class ContractServiceImpl implements ContractService {
                 .orElseThrow(() -> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
     }
 
-    // Contract 엔티티 저장
+    // Contract 저장
     public Contract saveContract(ContractRequestDto dto, Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
         return contractRepository.save(dto.toEntity(customer, manager, cleaning, routineContract));
     }
 
-    // ContractDetail 엔티티 저장
+    // ContractDetail 저장
     public ContractDetail saveContactDetail(ContractRequestDto dto, Contract newContract) {
         dto.setStatus(ContractStatus.작업전);
         return contractDetailRepository.save(dto.toEntity(newContract));
     }
 
     // ContractOptions 저장
-    public void saveContractOptions(ContractRequestDto dto, Contract contract) {
+    public List<Long> saveContractOptions(ContractRequestDto dto, Contract contract) {
+        List<Long> cleaningOptions = new ArrayList<>();
         for (Long optionId : dto.getCleaningOptionList()) {
             CleaningOption cleaningOption = cleaningOptionRepository.findById(optionId)
                     .orElseThrow(() -> new CleaningOptionNotFoundException(ErrorCode.CLEANING_OPTION_NOT_FOUND));
 
+            cleaningOptions.add(cleaningOption.getId());
             contractOptionRepository.save(dto.toOptionEntity(contract, cleaningOption));
         }
+
+        return cleaningOptions;
+    }
+
+    // RoutineContract 저장
+    public RoutineContract saveRoutineContract(ContractRequestDto dto) {
+        return routineContractRepository.save(dto.toEntity());
     }
 
 
     // 1회성 청소 요청글 작성
     @Transactional
     @Override
-    public ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto) {
+    public OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto){
         Customer customer = findCustomer(contractDto.getCustomerId());
         Manager manager = findManagerIfPresent(contractDto.getManagerId());
         RoutineContract routineContract = findRoutineContractIfPresent(contractDto.getRoutineContractId());
@@ -101,27 +118,72 @@ public class ContractServiceImpl implements ContractService {
         ContractDetail newContractDetail = saveContactDetail(contractDto, newContract);
 
         // contract_option - 청소 요구사항 정보 저장
-        saveContractOptions(contractDto, newContract);
+        List<Long> cleaningOptions = saveContractOptions(contractDto, newContract);
 
-        return contractDto;
+        return OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
     }
 
+
+    // 날짜 계산
+    private List<LocalDateTime> generateContractDates(LocalDateTime start, List<DayOfWeek> targetDays, int count) {
+        List<LocalDateTime> result = new ArrayList<>();
+        LocalDate currentDate = start.toLocalDate();
+        int added = 0;
+
+        while (added < count) {
+            if (targetDays.contains(currentDate.getDayOfWeek())) {
+                result.add(currentDate.atTime(start.toLocalTime()));
+                added++;
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+        return result;
+    }
 
     // 정기 청소 요청글 작성
     @Transactional
     @Override
-    public RoutineContract createRoutineContract(@Valid ContractRequestDto routinecontractDto) {
+    public RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto routinecontractDto){
 
-        RoutineContract newRoutineContract = RoutineContract.builder()
-                .discountRate(routinecontractDto.getDiscountRate())
-                .routineCount(routinecontractDto.getRoutineCount())
-                .contractStartDate(routinecontractDto.getContractStartDate())
-                .startTime(routinecontractDto.getStartTime())
-                .time(routinecontractDto.getTime())
-                .day(routinecontractDto.getDay())
-                .build();
+        List<OneContractResponseDto> contractResponseDtoList = new ArrayList<>();
 
-        return routineContractRepository.save(newRoutineContract);
+        // 정기 예약 정보 저장
+        RoutineContract newRoutineContract = saveRoutineContract(routinecontractDto);
+
+        // 요일 파실 후 개별 예약 정보로 저장
+        // 2. 요일 파싱
+        List<DayOfWeek> dayList = routinecontractDto.getDayOfWeek();
+
+        // 3. 반복 예약 날짜 계산
+        List<LocalDateTime> contractDates = generateContractDates(routinecontractDto.getStartTime(), dayList, routinecontractDto.getRoutineCount());
+
+        for (LocalDateTime contractDate : contractDates) {
+            System.out.println(contractDate);
+        }
+
+        // 4. Entity 조회
+        Customer customer = findCustomer(routinecontractDto.getCustomerId());
+        Manager manager = findManagerIfPresent(routinecontractDto.getManagerId());
+        Cleaning cleaning = findCleaning(routinecontractDto.getCleaningId());
+
+        // 5. 각 날짜마다 Contract, ContractDetail, ContractOption 저장
+        for (LocalDateTime date : contractDates) {
+            routinecontractDto.setStatus(ContractStatus.작업전);
+            routinecontractDto.setContractDate(date);
+
+            // contract - 예약 정보 저장
+            Contract newContract = saveContract(routinecontractDto, customer, manager, cleaning, newRoutineContract);
+
+            // contract_detail - 예약 상세 정보 저장
+            ContractDetail newContractDetail = saveContactDetail(routinecontractDto, newContract);
+
+            // contract_option - 청소 요구사항 정보 저장
+            List<Long> cleaningOptions = saveContractOptions(routinecontractDto, newContract);
+
+            contractResponseDtoList.add(OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
+        }
+
+        return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
     }
 
 }

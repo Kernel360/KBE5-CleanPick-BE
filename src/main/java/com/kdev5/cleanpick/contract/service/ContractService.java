@@ -1,12 +1,12 @@
 package com.kdev5.cleanpick.contract.service;
 
 
-import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.RoutineContract;
-import com.kdev5.cleanpick.contract.dto.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
 import jakarta.validation.Valid;
 
 public interface ContractService {
-    ContractRequestDto createOneContract(@Valid ContractRequestDto contractDto);
-    RoutineContract createRoutineContract(@Valid ContractRequestDto contractDto);
+    OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto);
+    RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto contractDto);
 }
