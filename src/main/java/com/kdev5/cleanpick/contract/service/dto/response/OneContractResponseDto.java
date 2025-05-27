@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.contract.service.dto.response;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
+import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class OneContractResponseDto {
     private int totalPrice;
     private int totalTime;
     private boolean personal;
+    private ContractStatus status;
 
     // ContractDetail
     private LocalDateTime checkIn;
@@ -29,12 +31,11 @@ public class OneContractResponseDto {
     private String housingType;
     private String pet;
     private String request;
-//    private ContractStatus status;
 
     // ContractOption
     private List<Long> cleaningOptionList;
 
-    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, List<Long> cleaningOptionList) {
+    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, ContractStatus status, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, List<Long> cleaningOptionList) {
         this.contractId = contractId;
         this.routineContractId = routineContractId;
         this.customerId = customerId;
@@ -45,6 +46,7 @@ public class OneContractResponseDto {
         this.totalPrice = totalPrice;
         this.totalTime = totalTime;
         this.personal = personal;
+        this.status = status;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.housingType = housingType;
@@ -71,6 +73,7 @@ public class OneContractResponseDto {
                 contract.getTotalPrice(),
                 contract.getTotalTime(),
                 contract.isPersonal(),
+                contract.getStatus(),
                 contractDetail.getCheckIn(),
                 contractDetail.getCheckOut(),
                 contractDetail.getHousingType(),

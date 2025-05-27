@@ -49,6 +49,9 @@ public class ContractRequestDto {
     @JsonProperty("is_personal")
     private boolean personal;
 
+    @JsonProperty("status")
+    private ContractStatus status;
+
     // contract_detail
     @JsonProperty("check_in")
     private LocalDateTime checkIn;
@@ -68,8 +71,6 @@ public class ContractRequestDto {
     @JsonProperty("request")
     private String request;
 
-    @JsonProperty("status")
-    private ContractStatus status;
 
     //contract_option
     @JsonProperty("cleaning_option_list")
