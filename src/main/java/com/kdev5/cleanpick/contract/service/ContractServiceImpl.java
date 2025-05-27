@@ -7,6 +7,7 @@ import com.kdev5.cleanpick.cleaning.domain.exception.CleaningNotFoundException;
 import com.kdev5.cleanpick.cleaning.domain.exception.CleaningOptionNotFoundException;
 import com.kdev5.cleanpick.cleaning.infra.CleaningOptionRepository;
 import com.kdev5.cleanpick.cleaning.infra.CleaningRepository;
+import com.kdev5.cleanpick.common.util.ContractDateUtil;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
@@ -124,22 +125,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
 
-    // 날짜 계산
-    private List<LocalDateTime> generateContractDates(LocalDateTime start, List<DayOfWeek> targetDays, int count) {
-        List<LocalDateTime> result = new ArrayList<>();
-        LocalDate currentDate = start.toLocalDate();
-        int added = 0;
-
-        while (added < count) {
-            if (targetDays.contains(currentDate.getDayOfWeek())) {
-                result.add(currentDate.atTime(start.toLocalTime()));
-                added++;
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-        return result;
-    }
-
     // 정기 청소 요청글 작성
     @Transactional
     @Override
@@ -155,7 +140,7 @@ public class ContractServiceImpl implements ContractService {
         List<DayOfWeek> dayList = routinecontractDto.getDayOfWeek();
 
         // 3. 반복 예약 날짜 계산
-        List<LocalDateTime> contractDates = generateContractDates(routinecontractDto.getStartTime(), dayList, routinecontractDto.getRoutineCount());
+        List<LocalDateTime> contractDates = ContractDateUtil.generateContractDates(routinecontractDto.getStartTime(), dayList, routinecontractDto.getRoutineCount());
 
         for (LocalDateTime contractDate : contractDates) {
             System.out.println(contractDate);
