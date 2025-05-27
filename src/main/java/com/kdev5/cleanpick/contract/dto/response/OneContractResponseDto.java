@@ -3,7 +3,6 @@ package com.kdev5.cleanpick.contract.dto.response;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
-import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -30,12 +29,12 @@ public class OneContractResponseDto {
     private String housingType;
     private String pet;
     private String request;
-    private ContractStatus status;
+//    private ContractStatus status;
 
     // ContractOption
     private List<Long> cleaningOptionList;
 
-    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, ContractStatus status, List<Long> cleaningOptionList) {
+    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, List<Long> cleaningOptionList) {
         this.contractId = contractId;
         this.routineContractId = routineContractId;
         this.customerId = customerId;
@@ -51,7 +50,6 @@ public class OneContractResponseDto {
         this.housingType = housingType;
         this.pet = pet;
         this.request = request;
-        this.status = status;
         this.cleaningOptionList = cleaningOptionList;
     }
 
@@ -78,7 +76,6 @@ public class OneContractResponseDto {
                 contractDetail.getHousingType(),
                 contractDetail.getPet(),
                 contractDetail.getRequest(),
-                contractDetail.getStatus(),
                 cleaningOptionIds
         );
 
