@@ -1,4 +1,4 @@
-package com.kdev5.cleanpick.contract.dto.response;
+package com.kdev5.cleanpick.contract.service.dto.response;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;

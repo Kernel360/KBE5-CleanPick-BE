@@ -1,4 +1,4 @@
-package com.kdev5.cleanpick.contract.dto.request;
+package com.kdev5.cleanpick.contract.service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;

@@ -3,10 +3,13 @@ package com.kdev5.cleanpick.contract.domain;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "nominee")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Nominee extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
