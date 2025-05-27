@@ -13,8 +13,8 @@ import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
 import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
@@ -143,9 +143,9 @@ public class ContractServiceImpl implements ContractService {
     // 정기 청소 요청글 작성
     @Transactional
     @Override
-    public List<ContractResponseDto> createRoutineContract(@Valid ContractRequestDto routinecontractDto){
+    public RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto routinecontractDto){
 
-        List<ContractResponseDto> contractResponseDtoList = new ArrayList<>();
+        List<OneContractResponseDto> contractResponseDtoList = new ArrayList<>();
 
         // 정기 예약 정보 저장
         RoutineContract newRoutineContract = saveRoutineContract(routinecontractDto);
@@ -180,10 +180,10 @@ public class ContractServiceImpl implements ContractService {
             // contract_option - 청소 요구사항 정보 저장
             List<Long> cleaningOptions = saveContractOptions(routinecontractDto, newContract);
 
-            contractResponseDtoList.add(ContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
+            contractResponseDtoList.add(OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
         }
 
-        return contractResponseDtoList;
+        return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
     }
 
 }

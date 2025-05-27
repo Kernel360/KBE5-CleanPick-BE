@@ -1,15 +1,13 @@
 package com.kdev5.cleanpick.contract.controller;
 
 import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
 import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/contract")
@@ -28,8 +26,8 @@ public class ContractController {
 
     // 1-2. 정기 청소
     @PostMapping("/routine")
-    public ApiResponse<List<ContractResponseDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        List<ContractResponseDto> newContracts = contractService.createRoutineContract(contractDto);
+    public ApiResponse<RoutineContractResponseDto> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        RoutineContractResponseDto newContracts = contractService.createRoutineContract(contractDto);
 //        return ApiResponse.ok(newContract);
         return ApiResponse.ok(newContracts);
     }

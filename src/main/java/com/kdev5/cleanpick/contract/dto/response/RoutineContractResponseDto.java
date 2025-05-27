@@ -1,7 +1,5 @@
 package com.kdev5.cleanpick.contract.dto.response;
 
-import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import lombok.Getter;
 
@@ -38,18 +36,8 @@ public class RoutineContractResponseDto {
 
     public static RoutineContractResponseDto fromEntity(
             RoutineContract routineContract,
-            List<Contract> contracts,
-            List<ContractDetail> contractDetails,
-            List<List<Long>> cleaningOptionIdsList
+            List<OneContractResponseDto> contracts
     ) {
-        List<OneContractResponseDto> contractDtos = new java.util.ArrayList<>();
-
-        for (int i = 0; i < contracts.size(); i++) {
-            Contract contract = contracts.get(i);
-            ContractDetail detail = contractDetails.get(i);
-            List<Long> optionIds = cleaningOptionIdsList.get(i);
-            contractDtos.add(OneContractResponseDto.fromEntity(contract, detail, optionIds, routineContract));
-        }
 
         return new RoutineContractResponseDto(
                 routineContract.getId(),
@@ -59,7 +47,7 @@ public class RoutineContractResponseDto {
                 routineContract.getTime(),
                 routineContract.getStartTime(),
                 routineContract.getDayOfWeek(),
-                contractDtos
+                contracts
         );
     }
 
