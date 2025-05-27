@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.review.service;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
+import com.kdev5.cleanpick.contract.domain.exception.ContractException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
@@ -36,13 +36,12 @@ public class ReviewService {
 
     // TODO 로그인 연결
     private final Long userId = 1L;
-    private final String userType = "ROLE_USER";
+    private final String userType = "ROLE_MANAGER";
 
 
     @Transactional
     public ReviewResponseDto writeReview(WriteReviewRequestDto dto, List<MultipartFile> imgs) {
-        Contract contract = contractRepository.findById(dto.getContractId())
-                .orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
+        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ReviewContext context = resolveReviewer(dto);
 

@@ -95,7 +95,7 @@ public class ContractRequestDto {
     private List<DayOfWeek> dayOfWeek; // JSON 문자열 (예: ["MON", "WED", "FRI"])
 
 
-    public Contract toEntity(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract){
+    public Contract toEntity(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
         return Contract.builder()
                 .customer(customer)
                 .manager(manager)
@@ -105,23 +105,23 @@ public class ContractRequestDto {
                 .address(address)
                 .totalPrice(totalPrice)
                 .totalTime(totalTime)
+                .status(status)
                 .personal(personal)
                 .build();
     }
 
-    public ContractDetail toEntity(Contract contract){
+    public ContractDetail toEntity(Contract contract) {
         return ContractDetail.builder()
                 .contract(contract)
                 .checkIn(checkIn)
                 .checkOut(checkOut)
                 .pet(pet)
-                .status(status)
                 .request(request)
                 .housingType(housingType)
                 .build();
     }
 
-    public ContractOption toOptionEntity(Contract contract, CleaningOption cleaningOption){
+    public ContractOption toOptionEntity(Contract contract, CleaningOption cleaningOption) {
         return ContractOption.builder()
                 .contract(contract)
                 .cleaningOption(cleaningOption)

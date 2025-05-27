@@ -2,23 +2,26 @@ package com.kdev5.cleanpick.customer.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import com.kdev5.cleanpick.customer.domain.enumeration.LoginType;
+import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "customer")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Customer extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
-    private String email;
-
-    @Column(length = 255, nullable = false)
-    private String password;
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private User user;
 
     @Column(length = 50, nullable = false)
     private String name;
@@ -32,8 +35,14 @@ public class Customer extends BaseTimeEntity {
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "login_type", nullable = false)
-    private LoginType loginType;
 
+    @Builder
+    public Customer(Long id, String name, String phoneNumber, String address, String profileImageUrl, User user) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.profileImageUrl = profileImageUrl;
+        this.user = user;
+    }
 }
