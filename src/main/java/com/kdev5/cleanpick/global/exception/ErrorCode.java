@@ -14,7 +14,8 @@ public enum ErrorCode {
     CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다."),
     REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST , "REVIEW_ALREADY_EXISTS", "존재하지 않는 리뷰입니다." ),
     CLEANING_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST , "CLEANING_OPTION_NOT_FOUND", "존재하지 않는 청소 요구사항입니다."),
-    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "입력 정보가 잘못되었습니다.");
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "입력 정보가 잘못되었습니다."),
+    NOT_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "INVALID_IMAGE_EXTENSION", "이미지만 업로드 가능합니다.");
 
 
     private final HttpStatus httpStatus;
