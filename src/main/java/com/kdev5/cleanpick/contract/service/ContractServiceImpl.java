@@ -14,6 +14,7 @@ import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
 import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
@@ -104,7 +105,7 @@ public class ContractServiceImpl implements ContractService {
     // 1회성 청소 요청글 작성
     @Transactional
     @Override
-    public ContractResponseDto createOneContract(@Valid ContractRequestDto contractDto){
+    public OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto){
         Customer customer = findCustomer(contractDto.getCustomerId());
         Manager manager = findManagerIfPresent(contractDto.getManagerId());
         RoutineContract routineContract = findRoutineContractIfPresent(contractDto.getRoutineContractId());
@@ -119,7 +120,7 @@ public class ContractServiceImpl implements ContractService {
         // contract_option - 청소 요구사항 정보 저장
         List<Long> cleaningOptions = saveContractOptions(contractDto, newContract);
 
-        return ContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
+        return OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
     }
 
 
