@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.contract.controller;
 
 import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
 import com.kdev5.cleanpick.contract.dto.response.ContractResponseDto;
+import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -20,8 +21,8 @@ public class ContractController {
     // 1. 청소 요청 글 작성
     // 1-1. 1회성 청소
     @PostMapping("/one")
-    public ApiResponse<ContractResponseDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        ContractResponseDto newContract = contractService.createOneContract(contractDto);
+    public ApiResponse<OneContractResponseDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        OneContractResponseDto newContract = contractService.createOneContract(contractDto);
         return ApiResponse.ok(newContract);
     }
 
