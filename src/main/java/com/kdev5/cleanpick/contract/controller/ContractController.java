@@ -47,6 +47,11 @@ public class ContractController {
     public ResponseEntity<ApiResponse<PageResponse<ReadContractResponseDto>>> read(@RequestParam("status") ContractFilterStatus status, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readContracts(status, pageable))));
     }
+
+    @PutMapping("/change")
+    public ApiResponse<OneContractResponseDto> changeContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        return null;
+    }
 }
 
 
