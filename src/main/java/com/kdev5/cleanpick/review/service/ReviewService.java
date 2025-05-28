@@ -15,17 +15,19 @@ import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import com.kdev5.cleanpick.review.domain.exception.ReviewDuplicateException;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
@@ -69,6 +71,19 @@ public class ReviewService {
             List<String> fileUrls = reviewFileRepository.findReviewFileByReview(review);
             return ReviewResponseDto.fromEntity(review, fileUrls);
         });
+    }
+
+    public List<ReviewResponseDto> readRecentManagerReview() {
+
+        List<Long> ids = reviewRepository.findTopReviewIds();
+        List<Review> reviews = reviewRepository.findReviewsWithCustomerAndManager(ids);
+
+        return reviews.stream()
+                .map(review -> {
+                    List<String> fileUrls = reviewFileRepository.findReviewFileByReview(review);
+                    return ReviewResponseDto.fromEntity(review, fileUrls);
+                })
+                .collect(Collectors.toList());
     }
 
     private ReviewContext resolveReviewer(WriteReviewRequestDto dto) {
