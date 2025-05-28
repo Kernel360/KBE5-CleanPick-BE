@@ -21,7 +21,7 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ManagerSearchResponseDto>>> search (
             @RequestParam(required = false)
             String cleaning,
