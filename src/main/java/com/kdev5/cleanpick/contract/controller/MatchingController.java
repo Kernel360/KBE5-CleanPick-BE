@@ -5,28 +5,22 @@ import com.kdev5.cleanpick.contract.service.ContractMatchingService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/matching")
 public class MatchingController {
     private final ContractMatchingService contractMatchingService;
-    
-    @PatchMapping("/{contractId}/reject")
-    public ResponseEntity<ApiResponse<Void>> rejectMatchingRequest(@PathVariable("contractId") Long contractId) {
-        Long managerId = 1L; //TODO: 추후 연결
-        contractMatchingService.updateMatchingStatus(managerId, contractId, MatchingStatus.REJECT);
-        return ResponseEntity.ok(ApiResponse.ok());
-    }
 
-    @PatchMapping("/{contractId}/accept")
-    public ResponseEntity<ApiResponse<Void>> acceptMatchingRequest(@PathVariable("contractId") Long contractId) {
-        Long managerId = 1L; //TODO: 추후 연결
-        contractMatchingService.updateMatchingStatus(managerId, contractId, MatchingStatus.ACCEPT);
+    @PatchMapping("/{contractId}")
+    public ResponseEntity<ApiResponse<Void>> updateMatchingStatus(
+            @PathVariable Long contractId,
+            @RequestParam MatchingStatus status) {
+
+        Long managerId = 1L; // TODO: 추후 연결
+        contractMatchingService.updateMatchingStatus(managerId, contractId, status);
+
         return ResponseEntity.ok(ApiResponse.ok());
     }
 
