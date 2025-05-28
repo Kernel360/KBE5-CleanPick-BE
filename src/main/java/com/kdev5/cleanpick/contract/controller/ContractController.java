@@ -1,6 +1,7 @@
 package com.kdev5.cleanpick.contract.controller;
 
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
@@ -49,16 +50,17 @@ public class ContractController {
     }
 
     // Contract 수정
-    @PutMapping
-    public ResponseEntity<ApiResponse<Void>> changeContract(@RequestBody @Valid ContractRequestDto contractDto) {
+    @PutMapping("/{contractId}")
+    public ResponseEntity<ApiResponse<Void>> changeContract(@RequestBody @Valid UpdateContractRequestDto dto, @PathVariable("contractId") Long contractId) {
+        contractService.updateOneContract(dto, contractId);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     //Contract 삭제
-    @PostMapping
-    public ResponseEntity<ApiResponse<OneContractResponseDto>> deleteContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        //
-        return null;
+    @PostMapping("/{contractId}")
+    public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable("contractId") Long contractId) {
+        contractService.deleteOneContract(contractId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }
 

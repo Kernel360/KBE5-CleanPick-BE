@@ -13,6 +13,7 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.domain.exception.ContractException;
@@ -52,7 +53,6 @@ public class ContractServiceImpl implements ContractService {
     private final CleaningRepository cleaningRepository;
     private final CleaningOptionRepository cleaningOptionRepository;
     private final ManagerAvailableTimeRepository managerAvailableTimeRepository;
-    private final ReadContractService readContractService;
 
     // Entity 조회
     public Customer findCustomer(Long customerId) {
@@ -61,6 +61,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     public Manager findManagerIfPresent(Long managerId) {
+        System.out.println("findManagerIfPresent: " + managerId);
         if (managerId == null) return null;
         return managerRepository.findById(managerId)
                 .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
@@ -83,7 +84,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     public ContractDetail findContractDetail(Long contractId) {
-        return contractDetailRepository.findByContractId(contractId)
+        return contractDetailRepository.findById(contractId)
                 .orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_DETAIL_NOT_FOUND));
     }
 
@@ -216,19 +217,17 @@ public class ContractServiceImpl implements ContractService {
         }
     }
 
-
     @Transactional
     @Override
-    public void updateOneContract(ContractRequestDto contractDto) {
+    public void updateOneContract(@Valid UpdateContractRequestDto contractDto, Long contractId) {
         //request, contractDate, pet 수정
-        Contract contract = findContract(contractDto.getContractId());
-        ContractDetail contractDetail = findContractDetail(contractDto.getContractId());
-        Manager manager = findManagerIfPresent(contractDto.getManagerId());
-        Cleaning cleaning = findCleaning(contractDto.getCleaningId());
+        Contract contract = findContract(contractId);
+        ContractDetail contractDetail = findContractDetail(contractId);
 
         // 매니저 매칭 안된 계약이면 바로 수정, 매칭된 계약인 경우 일정 확인 후 수정 (일정 겹친다 알림떠서 매칭 취소할지말지 하는 팝업이 떠야할 수도 있을거 같음)
-        if ( contract.getManager().getId() == null ) contract.updateDate(contractDto.getContractDate());
+        if ( contract.getManager() == null ) contract.updateDate(contractDto.getContractDate());
         else {
+            Manager manager = findManagerIfPresent(contract.getManager().getId());
             // 매니저의 기존 일정과 안 겹치는지 + 매니저 가능 시간인지 확인 필요
             LocalDateTime newDateTime = contractDto.getContractDate();
             int durationHours = contract.getTotalTime();
@@ -244,6 +243,15 @@ public class ContractServiceImpl implements ContractService {
 
         contractDetail.updateInfo(contractDto.getRequest(), contractDto.getPet());
 
+    }
+
+    @Transactional
+    @Override
+    public void deleteOneContract(@Valid Long contractId) {
+        Contract contract = findContract(contractId);
+        ContractDetail contractDetail = findContractDetail(contractId);
+        contract.softDelete();
+        contractDetail.softDelete();
     }
 
 }

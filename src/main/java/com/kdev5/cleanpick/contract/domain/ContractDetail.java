@@ -1,10 +1,12 @@
 package com.kdev5.cleanpick.contract.domain;
 
+import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +14,8 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "contract_detail")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContractDetail {
+@Where(clause = "is_deleted = false")
+public class ContractDetail extends BaseTimeEntity {
 
     @Id
     @Column(name = "contract_id", nullable = false)
@@ -34,6 +37,7 @@ public class ContractDetail {
 
     @Column(length = 50, nullable = false)
     private String housingType;
+
 
     @Builder
     public ContractDetail(Contract contract, LocalDateTime checkIn, LocalDateTime checkOut, String pet, String request, String housingType) {
