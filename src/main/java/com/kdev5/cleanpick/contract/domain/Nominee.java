@@ -6,9 +6,11 @@ import com.kdev5.cleanpick.manager.domain.Manager;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Table(name = "nominee")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Nominee extends BaseTimeEntity {
