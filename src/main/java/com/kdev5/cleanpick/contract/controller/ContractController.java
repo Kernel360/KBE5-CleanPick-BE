@@ -1,8 +1,8 @@
 package com.kdev5.cleanpick.contract.controller;
 
-import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
-import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.contract.service.ReadContractService;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
@@ -46,6 +46,11 @@ public class ContractController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ReadContractResponseDto>>> read(@RequestParam("status") ContractFilterStatus status, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readContracts(status, pageable))));
+    }
+
+    @PutMapping
+    public ApiResponse<OneContractResponseDto> changeContract(@RequestBody @Valid ContractRequestDto contractDto) {
+        return null;
     }
 }
 
