@@ -45,4 +45,10 @@ public class ContractDetail {
         this.housingType = housingType;
     }
 
+    public void updateInfo(String request, String pet){
+        this.request = request;
+        this.pet = pet;
+    }
+
+
 }

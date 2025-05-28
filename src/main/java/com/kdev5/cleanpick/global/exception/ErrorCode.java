@@ -14,7 +14,9 @@ public enum ErrorCode {
     CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다."),
     REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST , "REVIEW_ALREADY_EXISTS", "존재하지 않는 리뷰입니다." ),
     CLEANING_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST , "CLEANING_OPTION_NOT_FOUND", "존재하지 않는 청소 요구사항입니다."),
-    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "입력 정보가 잘못되었습니다.");
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "입력 정보가 잘못되었습니다."),
+    CONTRACT_DETAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "CONTRACT_DETAIL_NOT_FOUND","존재하지 않는 상세 계약정보입니다."),
+    MANAGER_NOT_AVAILABLE_TIME(HttpStatus.BAD_REQUEST, "MANAGER_NOT_AVAILABLE_TIME", "매칭된 매니저가 가능한 시간이 아닙니다.");
 
 
     private final HttpStatus httpStatus;

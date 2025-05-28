@@ -22,7 +22,10 @@ import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
+import com.kdev5.cleanpick.manager.domain.ManagerAvailableTime;
+import com.kdev5.cleanpick.manager.domain.exception.ManagerNotAvailableTimeException;
 import com.kdev5.cleanpick.manager.domain.exception.ManagerNotFoundException;
+import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableTimeRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +51,8 @@ public class ContractServiceImpl implements ContractService {
     private final ManagerRepository managerRepository;
     private final CleaningRepository cleaningRepository;
     private final CleaningOptionRepository cleaningOptionRepository;
+    private final ManagerAvailableTimeRepository managerAvailableTimeRepository;
+    private final ReadContractService readContractService;
 
     // Entity 조회
     public Customer findCustomer(Long customerId) {
@@ -69,6 +75,16 @@ public class ContractServiceImpl implements ContractService {
     public Cleaning findCleaning(Long cleaningId) {
         return cleaningRepository.findById(cleaningId)
                 .orElseThrow(() -> new CleaningNotFoundException(ErrorCode.CLEANING_NOT_FOUND));
+    }
+
+    public Contract findContract(Long contractId) {
+        return contractRepository.findById(contractId)
+                .orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_NOT_FOUND));
+    }
+
+    public ContractDetail findContractDetail(Long contractId) {
+        return contractDetailRepository.findByContractId(contractId)
+                .orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_DETAIL_NOT_FOUND));
     }
 
     // Contract 저장
@@ -134,8 +150,7 @@ public class ContractServiceImpl implements ContractService {
         // 정기 예약 정보 저장
         RoutineContract newRoutineContract = saveRoutineContract(routinecontractDto);
 
-        // 요일 파실 후 개별 예약 정보로 저장
-        // 2. 요일 파싱
+        // 2, 요일 파싱
         List<DayOfWeek> dayList = routinecontractDto.getDayOfWeek();
 
         // 3. 반복 예약 날짜 계산
@@ -168,6 +183,67 @@ public class ContractServiceImpl implements ContractService {
         }
 
         return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
+    }
+
+    private void validateManagerAvailableTime(Manager manager, LocalTime startTime, DayOfWeek dayOfWeek, int durationHours) {
+        List<ManagerAvailableTime> availableTimes = managerAvailableTimeRepository.findByManagerAndDayOfWeek(manager, dayOfWeek);
+
+        LocalTime endTime = startTime.plusHours(durationHours);
+
+        boolean isWithinAvailableTime = availableTimes.stream().anyMatch(time ->
+                !startTime.isBefore(time.getStartTime()) && !endTime.isAfter(time.getEndTime()));
+
+        if (!isWithinAvailableTime) {
+            throw new ManagerNotAvailableTimeException(ErrorCode.MANAGER_NOT_AVAILABLE_TIME);
+        }
+    }
+
+    private void validateNoScheduleConflict(Manager manager, Long currentContractId, LocalDateTime start, int durationHours) {
+        LocalDateTime end = start.plusHours(durationHours);
+
+        List<Contract> existingContracts = contractRepository.findByManager(manager);
+
+        for (Contract other : existingContracts) {
+            if (other.getId().equals(currentContractId)) continue; // 현재 수정 중인 계약은 제외
+
+            LocalDateTime otherStart = other.getContractDate();
+            LocalDateTime otherEnd = otherStart.plusHours(other.getTotalTime());
+
+            boolean overlap = !(end.isBefore(otherStart) || start.isAfter(otherEnd));
+            if (overlap) {
+                throw new ManagerNotAvailableTimeException(ErrorCode.MANAGER_NOT_AVAILABLE_TIME);
+            }
+        }
+    }
+
+
+    @Transactional
+    @Override
+    public void updateOneContract(ContractRequestDto contractDto) {
+        //request, contractDate, pet 수정
+        Contract contract = findContract(contractDto.getContractId());
+        ContractDetail contractDetail = findContractDetail(contractDto.getContractId());
+        Manager manager = findManagerIfPresent(contractDto.getManagerId());
+        Cleaning cleaning = findCleaning(contractDto.getCleaningId());
+
+        // 매니저 매칭 안된 계약이면 바로 수정, 매칭된 계약인 경우 일정 확인 후 수정 (일정 겹친다 알림떠서 매칭 취소할지말지 하는 팝업이 떠야할 수도 있을거 같음)
+        if ( contract.getManager().getId() == null ) contract.updateDate(contractDto.getContractDate());
+        else {
+            // 매니저의 기존 일정과 안 겹치는지 + 매니저 가능 시간인지 확인 필요
+            LocalDateTime newDateTime = contractDto.getContractDate();
+            int durationHours = contract.getTotalTime();
+
+            // 1. 매니저 가능한 시간인지 확인
+            validateManagerAvailableTime(manager, newDateTime.toLocalTime(), newDateTime.getDayOfWeek(), durationHours);
+
+            // 2. 매니저 다른 계약과 겹치지 않는지 확인
+            validateNoScheduleConflict(manager, contract.getId(), newDateTime, durationHours);
+
+            contract.updateDate(newDateTime);
+        }
+
+        contractDetail.updateInfo(contractDto.getRequest(), contractDto.getPet());
+
     }
 
 }

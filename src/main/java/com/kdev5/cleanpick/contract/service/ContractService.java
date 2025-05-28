@@ -9,4 +9,5 @@ import jakarta.validation.Valid;
 public interface ContractService {
     OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto);
     RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto contractDto);
+    void updateOneContract(@Valid ContractRequestDto contractDto);
 }

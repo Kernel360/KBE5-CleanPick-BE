@@ -70,4 +70,8 @@ public class Contract extends BaseTimeEntity {
         this.personal = personal;
         this.status = status;
     }
+
+    public void updateDate(LocalDateTime date) {
+        this.contractDate = date;
+    }
 }
