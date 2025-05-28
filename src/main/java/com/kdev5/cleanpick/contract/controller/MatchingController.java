@@ -21,4 +21,11 @@ public class MatchingController {
         contractMatchingService.rejectMatchingRequest(managerId, contractId);
         return ResponseEntity.ok(ApiResponse.ok());
     }
+
+    @PatchMapping("/{contractId}/accept")
+    public ResponseEntity<ApiResponse<Void>> acceptMatchingRequest(@PathVariable("contractId") Long contractId) {
+        Long managerId = 1L; //TODO: 추후 연결
+        contractMatchingService.acceptMatchingRequest(managerId, contractId);
+        return ResponseEntity.ok(ApiResponse.ok());
+    }
 }

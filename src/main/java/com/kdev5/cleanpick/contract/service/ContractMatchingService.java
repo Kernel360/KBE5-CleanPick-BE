@@ -16,8 +16,19 @@ public class ContractMatchingService {
 
     @Transactional
     public void rejectMatchingRequest(Long managerId, Long contractId) {
-        Nominee nominee = nomineeRepository.findByContractAndManager(managerId, contractId).orElseThrow(() -> new NomineeException(ErrorCode.MATCHING_NOMINEE_NOT_FOUND));
+        Nominee nominee = getNominee(managerId, contractId);
         nominee.updateStatus(MatchingStatus.REJECT);
         nomineeRepository.save(nominee);
+    }
+
+    @Transactional
+    public void acceptMatchingRequest(Long managerId, Long contractId) {
+        Nominee nominee = getNominee(managerId, contractId);
+        nominee.updateStatus(MatchingStatus.ACCEPT);
+        nomineeRepository.save(nominee);
+    }
+
+    private Nominee getNominee(Long managerId, Long contractId) {
+        return nomineeRepository.findByContractAndManager(managerId, contractId).orElseThrow(() -> new NomineeException(ErrorCode.MATCHING_NOMINEE_NOT_FOUND));
     }
 }
