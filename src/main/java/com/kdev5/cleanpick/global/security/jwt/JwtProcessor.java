@@ -29,8 +29,7 @@ public class JwtProcessor {
         Long id = decoded.getClaim("id").asLong();
         String role = decoded.getClaim("role").asString();
 
-        User onlyForAuthentication = User.builder().id(id).role(Role.valueOf(role)).build();
-
+        User onlyForAuthentication = User.forAuthentication(id, Role.valueOf(role));
         return CustomUserDetails.fromEntity(onlyForAuthentication);
     }
 }
