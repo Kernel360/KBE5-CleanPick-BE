@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.review.service;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
+import com.kdev5.cleanpick.contract.domain.exception.ContractException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,6 +36,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
@@ -125,7 +127,7 @@ class ReviewServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reviewService.writeReview(reqDto, null))
-                .isInstanceOf(ContractNotFoundException.class);
+                .isInstanceOf(ContractException.class);
     }
 
     @Test
@@ -191,6 +193,45 @@ class ReviewServiceTest {
         assertThat(dto.getContent()).isEqualTo("좋았어요");
         assertThat(dto.getRating()).isEqualTo(5);
         assertThat(dto.getFiles()).containsExactlyElementsOf(fileUrls);
+    }
+
+    @Test
+    void readRecentManagerReview_정상조회() {
+        List<Long> ids = List.of(1L, 2L, 3L);
+
+        Review review1 = mock(Review.class);
+        Review review2 = mock(Review.class);
+        Review review3 = mock(Review.class);
+        List<Review> reviews = List.of(review1, review2, review3);
+
+        List<String> fileUrls1 = List.of("url1", "url2");
+        List<String> fileUrls2 = List.of("url3");
+        List<String> fileUrls3 = List.of();
+
+        ReviewResponseDto dto1 = mock(ReviewResponseDto.class);
+        ReviewResponseDto dto2 = mock(ReviewResponseDto.class);
+        ReviewResponseDto dto3 = mock(ReviewResponseDto.class);
+
+        when(reviewRepository.findTopReviewIds()).thenReturn(ids);
+        when(reviewRepository.findReviewsWithCustomerAndManager(ids)).thenReturn(reviews);
+        when(reviewFileRepository.findReviewFileByReview(review1)).thenReturn(fileUrls1);
+        when(reviewFileRepository.findReviewFileByReview(review2)).thenReturn(fileUrls2);
+        when(reviewFileRepository.findReviewFileByReview(review3)).thenReturn(fileUrls3);
+
+        try (MockedStatic<ReviewResponseDto> mocked = mockStatic(ReviewResponseDto.class)) {
+            mocked.when(() -> ReviewResponseDto.fromEntity(review1, fileUrls1)).thenReturn(dto1);
+            mocked.when(() -> ReviewResponseDto.fromEntity(review2, fileUrls2)).thenReturn(dto2);
+            mocked.when(() -> ReviewResponseDto.fromEntity(review3, fileUrls3)).thenReturn(dto3);
+
+            List<ReviewResponseDto> result = reviewService.readRecentManagerReview();
+
+            assertThat(result).containsExactly(dto1, dto2, dto3);
+            verify(reviewRepository).findTopReviewIds();
+            verify(reviewRepository).findReviewsWithCustomerAndManager(ids);
+            verify(reviewFileRepository).findReviewFileByReview(review1);
+            verify(reviewFileRepository).findReviewFileByReview(review2);
+            verify(reviewFileRepository).findReviewFileByReview(review3);
+        }
     }
 }
 

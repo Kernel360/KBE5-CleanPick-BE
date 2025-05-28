@@ -42,8 +42,8 @@ public class ReadContractServiceTest {
     private ReadContractService readContractService;
 
     Long contractId = 1L;
-    Customer customer = new Customer();
-    Manager manager = new Manager();
+    Customer customer = mock(Customer.class);
+    Manager manager = mock(Manager.class);
     Cleaning cleaning = Cleaning.builder().serviceName("특수청소").build();
     Contract contract = Contract.builder().manager(manager).customer(customer).cleaning(cleaning).status(ContractStatus.작업전).contractDate(LocalDateTime.now()).build();
 
