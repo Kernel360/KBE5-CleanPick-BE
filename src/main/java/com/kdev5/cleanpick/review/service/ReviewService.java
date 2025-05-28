@@ -11,6 +11,7 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import com.kdev5.cleanpick.review.domain.Review;
+import com.kdev5.cleanpick.review.domain.ReviewFile;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import com.kdev5.cleanpick.review.domain.exception.ReviewDuplicateException;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
@@ -74,13 +75,14 @@ public class ReviewService {
     }
 
     public List<ReviewResponseDto> readRecentManagerReview() {
-
         List<Long> ids = reviewRepository.findTopReviewIds();
-        List<Review> reviews = reviewRepository.findReviewsWithCustomerAndManager(ids);
+        List<Review> reviews = reviewRepository.findReviewsWithCustomerManagerAndFiles(ids);
 
         return reviews.stream()
                 .map(review -> {
-                    List<String> fileUrls = reviewFileRepository.findReviewFileByReview(review);
+                    List<String> fileUrls = review.getReviewFiles().stream()
+                            .map(ReviewFile::getReviewFileUrl)
+                            .collect(Collectors.toList());
                     return ReviewResponseDto.fromEntity(review, fileUrls);
                 })
                 .collect(Collectors.toList());

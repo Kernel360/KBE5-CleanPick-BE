@@ -10,6 +10,7 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import com.kdev5.cleanpick.review.domain.Review;
+import com.kdev5.cleanpick.review.domain.ReviewFile;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import com.kdev5.cleanpick.review.domain.exception.ReviewDuplicateException;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
@@ -199,39 +200,50 @@ class ReviewServiceTest {
     void readRecentManagerReview_정상조회() {
         List<Long> ids = List.of(1L, 2L, 3L);
 
+        ReviewFile file1 = mock(ReviewFile.class);
+        ReviewFile file2 = mock(ReviewFile.class);
+        ReviewFile file3 = mock(ReviewFile.class);
+
+        when(file1.getReviewFileUrl()).thenReturn("url1");
+        when(file2.getReviewFileUrl()).thenReturn("url2");
+        when(file3.getReviewFileUrl()).thenReturn("url3");
+        
         Review review1 = mock(Review.class);
         Review review2 = mock(Review.class);
         Review review3 = mock(Review.class);
-        List<Review> reviews = List.of(review1, review2, review3);
 
-        List<String> fileUrls1 = List.of("url1", "url2");
-        List<String> fileUrls2 = List.of("url3");
-        List<String> fileUrls3 = List.of();
+        when(review1.getReviewFiles()).thenReturn(List.of(file1, file2));
+        when(review2.getReviewFiles()).thenReturn(List.of(file3));
+        when(review3.getReviewFiles()).thenReturn(List.of());
+
+        List<Review> reviews = List.of(review1, review2, review3);
 
         ReviewResponseDto dto1 = mock(ReviewResponseDto.class);
         ReviewResponseDto dto2 = mock(ReviewResponseDto.class);
         ReviewResponseDto dto3 = mock(ReviewResponseDto.class);
 
         when(reviewRepository.findTopReviewIds()).thenReturn(ids);
-        when(reviewRepository.findReviewsWithCustomerAndManager(ids)).thenReturn(reviews);
-        when(reviewFileRepository.findReviewFileByReview(review1)).thenReturn(fileUrls1);
-        when(reviewFileRepository.findReviewFileByReview(review2)).thenReturn(fileUrls2);
-        when(reviewFileRepository.findReviewFileByReview(review3)).thenReturn(fileUrls3);
+        when(reviewRepository.findReviewsWithCustomerManagerAndFiles(ids)).thenReturn(reviews);
 
         try (MockedStatic<ReviewResponseDto> mocked = mockStatic(ReviewResponseDto.class)) {
-            mocked.when(() -> ReviewResponseDto.fromEntity(review1, fileUrls1)).thenReturn(dto1);
-            mocked.when(() -> ReviewResponseDto.fromEntity(review2, fileUrls2)).thenReturn(dto2);
-            mocked.when(() -> ReviewResponseDto.fromEntity(review3, fileUrls3)).thenReturn(dto3);
+            mocked.when(() -> ReviewResponseDto.fromEntity(review1, List.of("url1", "url2"))).thenReturn(dto1);
+            mocked.when(() -> ReviewResponseDto.fromEntity(review2, List.of("url3"))).thenReturn(dto2);
+            mocked.when(() -> ReviewResponseDto.fromEntity(review3, List.of())).thenReturn(dto3);
 
             List<ReviewResponseDto> result = reviewService.readRecentManagerReview();
 
             assertThat(result).containsExactly(dto1, dto2, dto3);
             verify(reviewRepository).findTopReviewIds();
-            verify(reviewRepository).findReviewsWithCustomerAndManager(ids);
-            verify(reviewFileRepository).findReviewFileByReview(review1);
-            verify(reviewFileRepository).findReviewFileByReview(review2);
-            verify(reviewFileRepository).findReviewFileByReview(review3);
+            verify(reviewRepository).findReviewsWithCustomerManagerAndFiles(ids);
+
+            verify(file1).getReviewFileUrl();
+            verify(file2).getReviewFileUrl();
+            verify(file3).getReviewFileUrl();
+            verify(review1).getReviewFiles();
+            verify(review2).getReviewFiles();
+            verify(review3).getReviewFiles();
         }
     }
+
 }
 

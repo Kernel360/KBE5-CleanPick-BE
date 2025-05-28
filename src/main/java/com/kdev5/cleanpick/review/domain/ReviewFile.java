@@ -2,8 +2,10 @@ package com.kdev5.cleanpick.review.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "review_file")
 public class ReviewFile extends BaseTimeEntity {
 

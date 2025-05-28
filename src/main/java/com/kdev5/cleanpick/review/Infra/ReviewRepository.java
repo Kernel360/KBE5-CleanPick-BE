@@ -38,7 +38,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(value = "SELECT r.id FROM review r WHERE r.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY r.rating DESC, r.id DESC LIMIT 3", nativeQuery = true)
     List<Long> findTopReviewIds();
 
-    @Query("SELECT r FROM Review r JOIN FETCH r.customer JOIN FETCH r.manager WHERE r.id IN :ids")
-    List<Review> findReviewsWithCustomerAndManager(List<Long> ids);
+    @Query("SELECT DISTINCT r FROM Review r " +
+            "JOIN FETCH r.customer " +
+            "JOIN FETCH r.manager " +
+            "LEFT JOIN FETCH r.reviewFiles " +  // 리뷰 이미지도 fetch join
+            "WHERE r.id IN :ids")
+    List<Review> findReviewsWithCustomerManagerAndFiles(List<Long> ids);
 
 }
