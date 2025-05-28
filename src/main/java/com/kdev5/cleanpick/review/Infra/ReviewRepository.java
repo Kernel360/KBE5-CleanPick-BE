@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.review.Infra;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.manager.domain.Manager;
+import com.kdev5.cleanpick.review.Infra.querydsl.ReviewRepositoryCustom;
 import com.kdev5.cleanpick.review.domain.Review;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom {
 
     @Query("SELECT r FROM Review r WHERE r.contract = :contract AND r.customer = :customer AND r.manager = :manager AND r.type = :type")
     Optional<Review> findReviewByReviewType(

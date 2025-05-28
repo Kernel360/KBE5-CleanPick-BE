@@ -1,16 +1,12 @@
 package com.kdev5.cleanpick.manager.service;
 
-import com.kdev5.cleanpick.cleaning.domain.QCleaning;
 import com.kdev5.cleanpick.manager.domain.Manager;
-import com.kdev5.cleanpick.manager.domain.QManagerAvailableCleaning;
-import com.kdev5.cleanpick.manager.domain.QManagerAvailableRegion;
-import com.kdev5.cleanpick.manager.domain.QRegion;
 import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
+import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableCleaningRepository;
+import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableRegionRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
-import com.kdev5.cleanpick.review.domain.QReview;
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,16 +15,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.kdev5.cleanpick.review.domain.enumeration.ReviewType.TO_MANAGER;
 
 @Service
 @RequiredArgsConstructor
 public class ManagerService {
 
     private final ManagerRepository managerRepository;
-    private final JPAQueryFactory queryFactory;
+    private final ReviewRepository reviewRepository;
+    private final ManagerAvailableRegionRepository managerAvailableRegionRepository;
+    private final ManagerAvailableCleaningRepository managerAvailableCleaningRepository;
 
     public Page<ManagerSearchResponseDto> searchManagers(
             String cleaning,
@@ -62,73 +57,19 @@ public class ManagerService {
     }
 
     private Map<Long, Double> loadAvgRating(List<Long> managerIds) {
-        QReview review = QReview.review;
-        List<Tuple> result = queryFactory
-                .select(review.manager.id, review.rating.avg())
-                .from(review)
-                .where(review.manager.id.in(managerIds).and(review.type.eq(TO_MANAGER)))
-                .groupBy(review.manager.id)
-                .fetch();
-
-        return result.stream().collect(Collectors.toMap(
-                tuple -> tuple.get(review.manager.id),
-                tuple -> {
-                    Double rating = tuple.get(review.rating.avg());
-                    return rating != null ? rating : 0.0;
-                }
-        ));
+        return reviewRepository.getAvgRatingForMangers(managerIds);
     }
 
     private Map<Long, Long> loadReviewCount(List<Long> managerIds) {
-        QReview review = QReview.review;
-        List<Tuple> result = queryFactory
-                .select(review.manager.id, review.count())
-                .from(review)
-                .where(review.manager.id.in(managerIds).and(review.type.eq(TO_MANAGER)))
-                .groupBy(review.manager.id)
-                .fetch();
-
-        return result.stream().collect(Collectors.toMap(
-                tuple -> tuple.get(review.manager.id),
-                tuple -> {
-                    Long count = tuple.get(review.count());
-                    return count != null ? count : 0L;
-                }
-        ));
+        return reviewRepository.getReviewCountForManagers(managerIds);
     }
 
     private Map<Long, List<String>> loadRegions(List<Long> managerIds) {
-        QManagerAvailableRegion mar = QManagerAvailableRegion.managerAvailableRegion;
-        QRegion region = QRegion.region;
-
-        List<Tuple> result = queryFactory
-                .select(mar.manager.id, region.name)
-                .from(mar)
-                .join(mar.region, region)
-                .where(mar.manager.id.in(managerIds))
-                .fetch();
-
-        return result.stream().collect(Collectors.groupingBy(
-                tuple -> tuple.get(mar.manager.id),
-                Collectors.mapping(tuple -> tuple.get(region.name), Collectors.toList())
-        ));
+        return managerAvailableRegionRepository.loadRegions(managerIds);
     }
 
     private Map<Long, List<String>> loadCleanings(List<Long> managerIds) {
-        QManagerAvailableCleaning mac = QManagerAvailableCleaning.managerAvailableCleaning;
-        QCleaning cleaning = QCleaning.cleaning;
-
-        List<Tuple> result = queryFactory
-                .select(mac.manager.id, cleaning.serviceName)
-                .from(mac)
-                .join(mac.cleaning, cleaning)
-                .where(mac.manager.id.in(managerIds))
-                .fetch();
-
-        return result.stream().collect(Collectors.groupingBy(
-                tuple -> tuple.get(mac.manager.id),
-                Collectors.mapping(tuple -> tuple.get(cleaning.serviceName), Collectors.toList())
-        ));
+        return managerAvailableCleaningRepository.loadCleanings(managerIds);
     }
 
     private String extractRegionSummary(Long managerId, String regionFilter, Map<Long, List<String>> regionMap) {
