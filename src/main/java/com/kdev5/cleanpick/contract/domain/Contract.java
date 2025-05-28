@@ -70,4 +70,8 @@ public class Contract extends BaseTimeEntity {
         this.personal = personal;
         this.status = status;
     }
+
+    public void updateManager(Manager manager) {
+        this.manager = manager;
+    }
 }
