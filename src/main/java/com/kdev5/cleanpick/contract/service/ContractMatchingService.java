@@ -23,15 +23,22 @@ public class ContractMatchingService {
     private final ManagerRepository managerRepository;
 
     @Transactional
-    public void updateMatchingStatus(Long managerId, Long contractId, MatchingStatus status) {
+    public void acceptMatching(Long managerId, Long contractId) {
         Nominee nominee = getNominee(managerId, contractId);
-        nominee.updateStatus(status);
+        nominee.updateStatus(MatchingStatus.ACCEPT);
         nomineeRepository.save(nominee);
     }
 
     @Transactional
-    public void matchManagerAndCustomer(Long managerId, Long contractId) {
-        updateMatchingStatus(managerId, contractId, MatchingStatus.ACCEPT);
+    public void rejectMatching(Long managerId, Long contractId) {
+        Nominee nominee = getNominee(managerId, contractId);
+        nominee.updateStatus(MatchingStatus.REJECT);
+        nomineeRepository.save(nominee);
+    }
+
+    @Transactional
+    public void acceptPersonalMatching(Long managerId, Long contractId) {
+        acceptMatching(managerId, contractId);
 
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
@@ -42,6 +49,14 @@ public class ContractMatchingService {
 
         contract.updateManager(manager);
         contractRepository.save(contract);
+
+        //TODO: 알림 로직
+    }
+
+    @Transactional
+    public void rejectPersonalMatching(Long managerId, Long contractId) {
+        rejectMatching(managerId, contractId);
+        //TODO: 알림 로직
     }
 
     private Nominee getNominee(Long managerId, Long contractId) {
