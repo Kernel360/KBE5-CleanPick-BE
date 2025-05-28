@@ -3,7 +3,8 @@ package com.kdev5.cleanpick.manager.infra.querydsl;
 
 import com.kdev5.cleanpick.cleaning.domain.QCleaning;
 import com.kdev5.cleanpick.manager.domain.*;
-import com.kdev5.cleanpick.manager.service.dto.response.ManagerResponseDto;
+import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
+import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
 import com.kdev5.cleanpick.review.domain.QReview;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import static com.kdev5.cleanpick.review.domain.enumeration.ReviewType.TO_MANAGER;
 import java.util.HashMap;
@@ -23,17 +25,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Repository
 @RequiredArgsConstructor
 public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ManagerResponseDto> searchManagers(
+    public Page<ManagerSearchResponseDto> searchManagers(
             String cleaning,
             String region,
             String keyword,
-            String sortType,
+            SortType sortType,
             Pageable pageable
     ) {
         QManager manager = QManager.manager;
@@ -43,7 +46,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
         QManagerAvailableRegion mar = QManagerAvailableRegion.managerAvailableRegion;
         QRegion regionEntity = QRegion.region;
 
-        //기본 쿼리 생성
+        //기본 쿼리
         JPQLQuery<Manager> baseQuery = queryFactory
                 .selectFrom(manager)
                 .distinct();
@@ -64,7 +67,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                     .where(regionEntity.name.eq(region));
         }
 
-        //검색어 적용 쿼리 생성
+        // 검색어 적용 쿼리 생성
         if (keyword != null && !keyword.isBlank()) {
             baseQuery.where(manager.name.containsIgnoreCase(keyword));
         }
@@ -72,41 +75,46 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
         //정렬 타입 적용 쿼리 생성
         baseQuery.orderBy(getOrderSpecifier(sortType, review, manager));
 
-        //페이징 위해 검색된 전체 row 수 저장
         long total = baseQuery.fetchCount();
 
-        //페이징 처리
         List<Manager> managers = baseQuery
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<Long> managerIds = managers.stream().map(Manager::getId).toList();
 
+        //매니저 id list 저장
+        List<Long> managerIds = managers.stream().map(Manager::getId).toList();
+        //매니저별 평균 평점
         Map<Long, Double> avgMap = new HashMap<>();
+        //매니저별 리뷰 수
         Map<Long, Long> countMap = new HashMap<>();
+
         loadReviewStats(managerIds, avgMap, countMap);
 
+        //매니저별 가능지역 저장
         Map<Long, List<String>> regionMap = loadManagerRegions(managerIds);
+        //매니저별 가능서비스 저장
         Map<Long, List<String>> cleaningMap = loadManagerCleanings(managerIds);
 
         //엔티티 -> response dto 맵핑
-        List<ManagerResponseDto> content = managers.stream()
-                .map(m -> new ManagerResponseDto(
+        List<ManagerSearchResponseDto> content = managers.stream()
+                .map(m -> new ManagerSearchResponseDto(
                         m.getId(),
                         m.getName(),
-                        avgMap.getOrDefault(m.getId(), 0.0),
-                        countMap.getOrDefault(m.getId(), 0L),
+                        avgMap.getOrDefault(m.getId(), 0.0), //id에 해당하는 평점 리턴
+                        countMap.getOrDefault(m.getId(), 0L), //id에 해당하는 리뷰수 리턴
                         m.getProfileImageUrl(),
                         m.getProfileMessage(),
-                        extractRegionSummary(m.getId(), region, regionMap),
+                        extractRegionSummary(m.getId(), region, regionMap), //id에 해당하는 지역 외 n곳 string 리턴
                         cleaningMap.getOrDefault(m.getId(), List.of())
                 ))
                 .toList();
-        //dto + 페이징데이터 리턴
+
         return new PageImpl<>(content, pageable, total);
     }
 
+    // 필터 적용된 매니저로 avgMap, countMap 저장
     private void loadReviewStats(List<Long> managerIds, Map<Long, Double> avgMap, Map<Long, Long> countMap) {
         QReview review = QReview.review;
 
@@ -114,7 +122,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                 .select(review.manager.id, review.rating.avg(), review.count())
                 .from(review)
                 .where(
-                        review.manager.id.in(managerIds)
+                        review.manager.id.in(managerIds) //필터 적용된 매니저id
                                 .and(review.type.eq(TO_MANAGER))
                 )
                 .groupBy(review.manager.id)
@@ -129,10 +137,12 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
         }
     }
 
+    // 매니저별 가능 지역 리스트 리턴
     private Map<Long, List<String>> loadManagerRegions(List<Long> managerIds) {
         QManagerAvailableRegion mar = QManagerAvailableRegion.managerAvailableRegion;
         QRegion region = QRegion.region;
 
+        // (매니저, 지역) tuple
         List<Tuple> result = queryFactory
                 .select(mar.manager.id, region.name)
                 .from(mar)
@@ -140,6 +150,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                 .where(mar.manager.id.in(managerIds))
                 .fetch();
 
+        // <매니저 , 지역리스트> map
         return result.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(mar.manager.id),
@@ -147,6 +158,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                 ));
     }
 
+    // 매니저별 가능 서비스 리턴
     private Map<Long, List<String>> loadManagerCleanings(List<Long> managerIds) {
         QManagerAvailableCleaning mac = QManagerAvailableCleaning.managerAvailableCleaning;
         QCleaning cleaning = QCleaning.cleaning;
@@ -165,6 +177,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                 ));
     }
 
+    // 매니저별 검색한 {region} 외 {n}곳 리턴
     private String extractRegionSummary(Long managerId, String regionFilter, Map<Long, List<String>> regionMap) {
         List<String> regionNames = regionMap.getOrDefault(managerId, List.of());
 
@@ -178,9 +191,10 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
         return regionNames.isEmpty() ? "" : regionNames.get(0);
     }
 
-    private OrderSpecifier<?> getOrderSpecifier(String sortType, QReview review, QManager manager) {
+    // 정렬 기준에 따라 정렬 객체 생성
+    private OrderSpecifier<?> getOrderSpecifier(SortType sortType, QReview review, QManager manager) {
         switch (sortType) {
-            case "평점순" -> {
+            case STAR -> { // 별점순으로 정렬
                 return new OrderSpecifier<>(
                         Order.DESC,
                         JPAExpressions.select(review.rating.avg().coalesce(0.0))
@@ -191,7 +205,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                                 )
                 );
             }
-            case "리뷰많은순" -> {
+            case REVIEW_COUNT -> { //리뷰많은순으로 정렬
                 return new OrderSpecifier<>(
                         Order.DESC,
                         JPAExpressions.select(review.count().coalesce(0L))
@@ -202,7 +216,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
                                 )
                 );
             }
-            default -> {
+            default -> {             //기본순: 추천순으로 정렬
                 NumberExpression<Double> score = review.rating.avg().coalesce(0.0).multiply(0.7)
                         .add(review.count().doubleValue().multiply(0.3));
                 return new OrderSpecifier<>(

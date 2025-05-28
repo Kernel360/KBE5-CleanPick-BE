@@ -2,8 +2,9 @@ package com.kdev5.cleanpick.manager.controller;
 
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
+import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
 import com.kdev5.cleanpick.manager.service.ManagerService;
-import com.kdev5.cleanpick.manager.service.dto.response.ManagerResponseDto;
+import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,24 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/manager")
+@RequestMapping("/manager")
 public class ManagerController {
 
     private final ManagerService managerService;
 
-    @GetMapping("")
-    public ResponseEntity<ApiResponse<PageResponse<ManagerResponseDto>>> searchManager (
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<ManagerSearchResponseDto>>> search (
             @RequestParam(required = false)
             String cleaning,
             @RequestParam(required = false)
             String region,
             @RequestParam(required = false)
             String keyword,                             // 검색어
-            @RequestParam(defaultValue = "추천순")
-            String sortType,
+            @RequestParam(defaultValue = "RECOMMENDATION")
+            SortType sortType,
             Pageable pageable
     ) {
-        Page<ManagerResponseDto> result = managerService.searchManagers(cleaning, region, keyword, sortType, pageable);
+        Page<ManagerSearchResponseDto> result = managerService.searchManagers(cleaning, region, keyword, sortType, pageable);
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(result)));
     }
 }

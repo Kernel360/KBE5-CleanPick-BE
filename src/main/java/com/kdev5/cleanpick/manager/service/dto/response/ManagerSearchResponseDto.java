@@ -2,7 +2,7 @@ package com.kdev5.cleanpick.manager.service.dto.response;
 
 import java.util.List;
 
-public record ManagerResponseDto(
+public record ManagerSearchResponseDto(
         Long id,
         String name,
         double averageRating,

@@ -1,8 +1,8 @@
 package com.kdev5.cleanpick.manager.service;
 
-import com.kdev5.cleanpick.manager.infra.querydsl.ManagerRepositoryCustom;
+import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
-import com.kdev5.cleanpick.manager.service.dto.response.ManagerResponseDto;
+import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +14,12 @@ public class ManagerService {
 
     private final ManagerRepository managerRepository;
 
-    // 매니저 검색 및 필터
-    public Page<ManagerResponseDto> searchManagers(
+    // 필터, 검색, 정렬을 적용한 매니저 리스트 반환
+    public Page<ManagerSearchResponseDto> searchManagers(
             String serviceType,
             String region,
             String keyword,
-            String sortType,
+            SortType sortType,
             Pageable pageable
     ) {
         return managerRepository.searchManagers(serviceType, region, keyword, sortType, pageable);
