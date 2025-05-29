@@ -16,8 +16,8 @@ public enum ErrorCode {
     REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "REVIEW_ALREADY_EXISTS", "존재하지 않는 리뷰입니다."),
     CLEANING_OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "CLEANING_OPTION_NOT_FOUND", "존재하지 않는 청소 요구사항입니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "입력 정보가 잘못되었습니다."),
-    MATCHING_NOMINEE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MATCHING_NOMINEE_NOT_FOUND", "존재하지 않는 매칭 요청입니다.");
-
+    MATCHING_NOMINEE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MATCHING_NOMINEE_NOT_FOUND", "존재하지 않는 매칭 요청입니다."),
+    NOT_IMAGE_EXTENSION(HttpStatus.BAD_REQUEST, "NOT_IMAGE_EXTENSION", "이미지 형식이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
