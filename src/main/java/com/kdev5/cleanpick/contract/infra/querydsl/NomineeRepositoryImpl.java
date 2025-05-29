@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,94 +32,35 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
 
     @Override
     public Page<Nominee> findRequestedMatching(Long managerId, Boolean isPersonal, Pageable pageable) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(nominee.manager.id.eq(managerId));
-        builder.and(nominee.status.eq(MatchingStatus.PENDING));
+        BooleanBuilder builder = new BooleanBuilder()
+                .and(nominee.manager.id.eq(managerId))
+                .and(nominee.status.eq(MatchingStatus.PENDING));
 
         if (isPersonal != null) builder.and(contract.personal.eq(isPersonal));
 
-        List<Nominee> content = queryFactory
-                .selectFrom(nominee)
-                .join(nominee.contract, contract).fetchJoin()
-                .join(contract.cleaning, cleaning).fetchJoin()
-                .join(contract.customer, customer).fetchJoin()
-                .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(nominee.createdAt.desc())
-                .fetch();
-
-        Long total = queryFactory
-                .select(nominee.count())
-                .from(nominee)
-                .join(nominee.contract, contract)
-                .where(builder)
-                .fetchOne();
-
-        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+        return fetchNomineesWithPaging(builder, pageable, nominee.createdAt.desc());
     }
 
     @Override
     public Page<Nominee> readAcceptedMatching(Long managerId, ServiceName type, Pageable pageable) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(nominee.manager.id.eq(managerId));
-        builder.and(nominee.status.eq(MatchingStatus.ACCEPT));
+        BooleanBuilder builder = new BooleanBuilder()
+                .and(nominee.manager.id.eq(managerId))
+                .and(nominee.status.eq(MatchingStatus.ACCEPT));
 
         if (type != null) builder.and(contract.cleaning.serviceName.eq(type));
 
-        List<Nominee> content = queryFactory
-                .selectFrom(nominee)
-                .join(nominee.contract, contract).fetchJoin()
-                .join(contract.cleaning, cleaning).fetchJoin()
-                .join(contract.customer, customer).fetchJoin()
-                .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(nominee.createdAt.desc())
-                .fetch();
-
-        Long total = queryFactory
-                .select(nominee.count())
-                .from(nominee)
-                .join(nominee.contract, contract)
-                .where(builder)
-                .fetchOne();
-
-        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+        return fetchNomineesWithPaging(builder, pageable, nominee.createdAt.desc());
     }
 
     @Override
-    public Page<Nominee> findConfirmedMatching(Long managerId, ServiceName serviceType, String sortType, Pageable pageable) {
+    public Page<Nominee> findConfirmedMatching(Long managerId, ServiceName serviceName, String sortType, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder()
                 .and(nominee.status.eq(MatchingStatus.CONFIRMED))
-                // 후보자와 계약의 매니저가 항상 같아야 하므로 이중 체크
-                .and(nominee.contract.manager.id.eq(managerId))
                 .and(nominee.manager.id.eq(managerId));
 
-        if (serviceType != null) builder.and(contract.cleaning.serviceName.eq(serviceType));
+        if (serviceName != null) builder.and(contract.cleaning.serviceName.eq(serviceName));
 
-        List<Nominee> content = queryFactory
-                .selectFrom(nominee)
-                .join(nominee.contract, contract).fetchJoin()
-                .join(contract.cleaning, cleaning).fetchJoin()
-                .join(contract.customer, customer).fetchJoin()
-                .join(contract.manager, manager).fetchJoin()
-                .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(getOrderSpecifier(sortType))
-                .fetch();
-
-        Long total = queryFactory
-                .select(nominee.count())
-                .from(nominee)
-                .join(nominee.contract, contract)
-                .where(builder)
-                .fetchOne();
-
-        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+        return fetchNomineesWithPaging(builder, pageable, getOrderSpecifier(sortType));
     }
 
     private OrderSpecifier<LocalDateTime> getOrderSpecifier(String sortType) {
@@ -129,5 +71,51 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
         } else {
             return new OrderSpecifier<>(order, nominee.updatedAt);
         }
+    }
+
+    private Page<Nominee> fetchNomineesWithPaging(BooleanBuilder builder, Pageable pageable, OrderSpecifier<?> orderSpecifier) {
+        List<Long> nomineeIds = fetchNomineeIds(builder, pageable, orderSpecifier);
+
+        if (nomineeIds.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        List<Nominee> content = fetchNomineesByIds(nomineeIds, orderSpecifier);
+        Long total = countNominees(builder);
+
+        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    private List<Long> fetchNomineeIds(BooleanBuilder builder, Pageable pageable, OrderSpecifier<?> orderSpecifier) {
+        return queryFactory
+                .select(nominee.id)
+                .from(nominee)
+                .join(nominee.contract, contract)
+                .where(builder)
+                .orderBy(orderSpecifier)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    private List<Nominee> fetchNomineesByIds(List<Long> nomineeIds, OrderSpecifier<?> orderSpecifier) {
+        return queryFactory
+                .selectFrom(nominee)
+                .join(nominee.contract, contract).fetchJoin()
+                .join(contract.cleaning, cleaning).fetchJoin()
+                .join(contract.customer, customer).fetchJoin()
+                .join(contract.manager, manager).fetchJoin()
+                .where(nominee.id.in(nomineeIds))
+                .orderBy(orderSpecifier)
+                .fetch();
+    }
+
+    private Long countNominees(BooleanBuilder builder) {
+        return queryFactory
+                .select(nominee.count())
+                .from(nominee)
+                .join(nominee.contract, contract)
+                .where(builder)
+                .fetchOne();
     }
 }
