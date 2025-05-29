@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.review.service;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.exception.ContractException;
+import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
@@ -11,21 +12,24 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewFileRepository;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import com.kdev5.cleanpick.review.domain.Review;
+import com.kdev5.cleanpick.review.domain.ReviewFile;
 import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import com.kdev5.cleanpick.review.domain.exception.ReviewDuplicateException;
 import com.kdev5.cleanpick.review.service.dto.request.WriteReviewRequestDto;
 import com.kdev5.cleanpick.review.service.dto.response.ReviewResponseDto;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
@@ -41,7 +45,7 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto writeReview(WriteReviewRequestDto dto, List<MultipartFile> imgs) {
-        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_NOT_FOUND));
+        Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
 
         ReviewContext context = resolveReviewer(dto);
 
@@ -69,6 +73,20 @@ public class ReviewService {
             List<String> fileUrls = reviewFileRepository.findReviewFileByReview(review);
             return ReviewResponseDto.fromEntity(review, fileUrls);
         });
+    }
+
+    public List<ReviewResponseDto> readRecentManagerReview() {
+        List<Long> ids = reviewRepository.findTopReviewIds();
+        List<Review> reviews = reviewRepository.findReviewsWithCustomerManagerAndFiles(ids);
+
+        return reviews.stream()
+                .map(review -> {
+                    List<String> fileUrls = review.getReviewFiles().stream()
+                            .map(ReviewFile::getReviewFileUrl)
+                            .collect(Collectors.toList());
+                    return ReviewResponseDto.fromEntity(review, fileUrls);
+                })
+                .collect(Collectors.toList());
     }
 
     private ReviewContext resolveReviewer(WriteReviewRequestDto dto) {

@@ -7,13 +7,14 @@ import com.kdev5.cleanpick.cleaning.domain.exception.CleaningNotFoundException;
 import com.kdev5.cleanpick.cleaning.domain.exception.CleaningOptionNotFoundException;
 import com.kdev5.cleanpick.cleaning.infra.CleaningOptionRepository;
 import com.kdev5.cleanpick.cleaning.infra.CleaningRepository;
+import com.kdev5.cleanpick.common.util.ContractDateUtil;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
-import com.kdev5.cleanpick.contract.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.dto.response.OneContractResponseDto;
-import com.kdev5.cleanpick.contract.dto.response.RoutineContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.domain.exception.ContractException;
 import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,12 +73,12 @@ public class ContractServiceImpl implements ContractService {
 
     // Contract 저장
     public Contract saveContract(ContractRequestDto dto, Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
+        dto.setStatus(ContractStatus.작업전);
         return contractRepository.save(dto.toEntity(customer, manager, cleaning, routineContract));
     }
 
     // ContractDetail 저장
     public ContractDetail saveContactDetail(ContractRequestDto dto, Contract newContract) {
-        dto.setStatus(ContractStatus.작업전);
         return contractDetailRepository.save(dto.toEntity(newContract));
     }
 
@@ -124,22 +124,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
 
-    // 날짜 계산
-    private List<LocalDateTime> generateContractDates(LocalDateTime start, List<DayOfWeek> targetDays, int count) {
-        List<LocalDateTime> result = new ArrayList<>();
-        LocalDate currentDate = start.toLocalDate();
-        int added = 0;
-
-        while (added < count) {
-            if (targetDays.contains(currentDate.getDayOfWeek())) {
-                result.add(currentDate.atTime(start.toLocalTime()));
-                added++;
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-        return result;
-    }
-
     // 정기 청소 요청글 작성
     @Transactional
     @Override
@@ -155,7 +139,7 @@ public class ContractServiceImpl implements ContractService {
         List<DayOfWeek> dayList = routinecontractDto.getDayOfWeek();
 
         // 3. 반복 예약 날짜 계산
-        List<LocalDateTime> contractDates = generateContractDates(routinecontractDto.getStartTime(), dayList, routinecontractDto.getRoutineCount());
+        List<LocalDateTime> contractDates = ContractDateUtil.generateContractDates(routinecontractDto.getStartTime(), dayList, routinecontractDto.getRoutineCount());
 
         for (LocalDateTime contractDate : contractDates) {
             System.out.println(contractDate);

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "customer")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Customer extends BaseTimeEntity {
 
     @Id
@@ -49,4 +49,5 @@ public class Customer extends BaseTimeEntity {
         this.profileImageUrl = profileImageUrl;
         this.user = user;
     }
+
 }

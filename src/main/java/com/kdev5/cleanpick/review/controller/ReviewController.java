@@ -35,4 +35,9 @@ public class ReviewController {
     private ResponseEntity<ApiResponse<PageResponse<ReviewResponseDto>>> readMyReview(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(reviewService.readMyReview(pageable))));
     }
+
+    @GetMapping("/recent")
+    private ResponseEntity<ApiResponse<List<ReviewResponseDto>>> readRecentManagerReview() {
+        return ResponseEntity.ok(ApiResponse.ok(reviewService.readRecentManagerReview()));
+    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public class ContractDateUtil {
 
     // 날짜 계산
-    private List<LocalDateTime> generateContractDates(LocalDateTime start, List<DayOfWeek> targetDays, int count) {
+    public static List<LocalDateTime> generateContractDates(LocalDateTime start, List<DayOfWeek> targetDays, int count) {
         List<LocalDateTime> result = new ArrayList<>();
         LocalDate currentDate = start.toLocalDate();
         int added = 0;
