@@ -40,7 +40,8 @@ public class Customer extends BaseTimeEntity {
 
 
     @Builder
-    public Customer(String name, String phoneNumber, String mainAddress, String subAddress,  String profileImageUrl, User user) {
+    public Customer(Long id, String name, String phoneNumber, String mainAddress, String subAddress,  String profileImageUrl, User user) {
+        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.mainAddress = mainAddress;

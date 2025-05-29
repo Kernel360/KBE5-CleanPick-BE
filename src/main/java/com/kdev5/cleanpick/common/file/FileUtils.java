@@ -17,6 +17,6 @@ public class FileUtils {
 	}
 
 	public static boolean isImage(String ext) {
-		return Arrays.stream(imageExtensions).noneMatch(ext::equals);
+		return Arrays.asList(imageExtensions).contains(ext);
 	}
 }

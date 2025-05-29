@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.kdev5.cleanpick.common.file.dto.PreSignedUrlRequest;
@@ -16,6 +17,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+// TODO: 추후 배포시 제거하기
+@Profile("s3")
 @RequiredArgsConstructor
 @Service
 public class PreSignedUrlService {
@@ -33,7 +36,7 @@ public class PreSignedUrlService {
 
 		final String contentType = "image/" + ext;
 
-		if(FileUtils.isImage(ext))
+		if(!FileUtils.isImage(ext))
 			throw new FileTypeException(ErrorCode.NOT_IMAGE_EXTENSION);
 
 		PutObjectRequest putObjectRequest = PutObjectRequest.builder()
