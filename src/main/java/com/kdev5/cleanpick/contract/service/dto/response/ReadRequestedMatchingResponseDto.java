@@ -45,7 +45,7 @@ public class ReadRequestedMatchingResponseDto {
 
         return ReadRequestedMatchingResponseDto.builder()
                 .contractId(contract.getId())
-                .serviceName(contract.getCleaning().getServiceName())
+                .serviceName(contract.getCleaning().getServiceName().getDescription())
                 .contractDate(parts.getDate())
                 .contractStartTime(parts.getTime())
                 .totalTime(contract.getTotalTime())

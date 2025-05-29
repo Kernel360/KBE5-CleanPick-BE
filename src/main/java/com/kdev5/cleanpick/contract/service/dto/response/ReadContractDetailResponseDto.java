@@ -65,11 +65,11 @@ public class ReadContractDetailResponseDto {
                 .customerName(contractDetail.getContract().getCustomer().getName())
                 .managerId(contractDetail.getContract().getManager().getId())
                 .managerName(contractDetail.getContract().getManager().getName())
-                .serviceName(contractDetail.getContract().getCleaning().getServiceName())
+                .serviceName(contractDetail.getContract().getCleaning().getServiceName().getDescription())
                 .contractDate(parts.getDate())
                 .contractStartTime(parts.getTime())
                 .totalTime(contractDetail.getContract().getTotalTime())
-                .address(contractDetail.getContract().getAddress())
+                .address(contractDetail.getContract().getAddress()) // 확정 전엔 대략적인 위치만 노출
                 .totalPrice(contractDetail.getContract().getTotalPrice())
                 .contractStatus(contractDetail.getContract().getStatus().name())
                 .petInfo(contractDetail.getPet())
