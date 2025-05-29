@@ -23,7 +23,7 @@ public class CustomerController {
 
 	private final CustomerService customerService;
 
-	@PostMapping("/")
+	@PostMapping
 	public ResponseEntity<ApiResponse<CustomerPrivateResponseDto>> writeCustomer(@AuthenticationPrincipal CustomUserDetails customUserDetails, @Valid @RequestBody WriteCustomerRequestDto writeCustomerRequestDto) {
 		return ResponseEntity.ok(
 			ApiResponse.ok(customerService.writeCustomer(customUserDetails.getId(), writeCustomerRequestDto))

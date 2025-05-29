@@ -28,7 +28,7 @@ public class PreSignedUrlService {
 
 	private final S3Presigner s3Presigner;
 
-	public PreSignedUrlResponse generatePreSignedUrl(final PreSignedUrlRequest preSignedUrlRequest) {
+	public PreSignedUrlResponse generatePreSignedUrl(final PreSignedUrlRequest preSignedUrlRequest, Long userId) {
 
 		final String fileName = preSignedUrlRequest.getFilename();
 
@@ -36,12 +36,15 @@ public class PreSignedUrlService {
 
 		final String contentType = "image/" + ext;
 
+		// 식별자 프로필이면 Principal에서 유저 ID를, 아닌 경우 리퀘스트의 ID 사용
+		final Long id = preSignedUrlRequest.getType().equals("profiles") ? userId : preSignedUrlRequest.getId();
+
 		if(!FileUtils.isImage(ext))
 			throw new FileTypeException(ErrorCode.NOT_IMAGE_EXTENSION);
 
 		PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 			.bucket(bucket)
-			.key("images/" + preSignedUrlRequest.getType() + "/" +
+			.key("images/" + preSignedUrlRequest.getType() + "/" + id + "/" +
 				UUID.randomUUID().toString() + "." + ext)
 			.contentType(contentType)
 			.build();
