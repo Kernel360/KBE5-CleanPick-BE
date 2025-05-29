@@ -8,6 +8,7 @@ import com.kdev5.cleanpick.contract.service.dto.response.ReadRequestedMatchingRe
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/matching/nominee")
+@Tag(name = "nominee API", description = "[매니저용] nominee status를 기반으로 매칭을 조회하는 컨트롤러")
 public class NomineeController {
 
     private final ReadNomineeService readNomineeService;

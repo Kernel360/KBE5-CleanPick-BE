@@ -1,15 +1,16 @@
 package com.kdev5.cleanpick.contract.controller;
 
-import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
-import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.contract.service.ReadContractService;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
+import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.ReadContractDetailResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.ReadContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/contract")
+@Tag(name = "contract API", description = "계약글 CRUD 컨트롤러")
 public class ContractController {
     private final ReadContractService readContractService;
     private final ContractService contractService;
