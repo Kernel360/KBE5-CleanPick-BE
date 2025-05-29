@@ -2,8 +2,6 @@ package com.kdev5.cleanpick.common.file;
 
 import java.util.Arrays;
 
-import com.kdev5.cleanpick.common.file.exception.FileTypeException;
-import com.kdev5.cleanpick.global.exception.ErrorCode;
 
 public class FileUtils {
 
