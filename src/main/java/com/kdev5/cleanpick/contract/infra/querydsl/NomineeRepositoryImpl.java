@@ -1,5 +1,6 @@
 package com.kdev5.cleanpick.contract.infra.querydsl;
 
+import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.domain.Nominee;
 import com.kdev5.cleanpick.contract.domain.QContract;
 import com.kdev5.cleanpick.contract.domain.QNominee;
@@ -32,6 +33,36 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
         builder.and(nominee.status.eq(MatchingStatus.PENDING));
 
         if (isPersonal != null) builder.and(contract.personal.eq(isPersonal));
+
+        List<Nominee> content = queryFactory
+                .selectFrom(nominee)
+                .join(nominee.contract, contract).fetchJoin()
+                .join(contract.cleaning, cleaning).fetchJoin()
+                .join(contract.customer, customer).fetchJoin()
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(nominee.createdAt.desc())
+                .fetch();
+
+        Long total = queryFactory
+                .select(nominee.count())
+                .from(nominee)
+                .join(nominee.contract, contract)
+                .where(builder)
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    @Override
+    public Page<Nominee> findRequestMatching(Long managerId, ServiceName type, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(nominee.manager.id.eq(managerId));
+        builder.and(nominee.status.eq(MatchingStatus.ACCEPT));
+
+        if (type != null) builder.and(contract.cleaning.serviceName.eq(type));
 
         List<Nominee> content = queryFactory
                 .selectFrom(nominee)

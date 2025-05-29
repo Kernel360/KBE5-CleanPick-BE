@@ -1,7 +1,9 @@
 package com.kdev5.cleanpick.contract.service;
 
+import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.domain.Nominee;
 import com.kdev5.cleanpick.contract.infra.NomineeRepository;
+import com.kdev5.cleanpick.contract.service.dto.response.ReadAcceptedMatchingResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.ReadRequestedMatchingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,5 +25,14 @@ public class ReadNomineeService {
                 ReadRequestedMatchingResponseDto.fromEntity(nominee.getContract(), nominee.getId())
         );
 
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReadAcceptedMatchingResponseDto> readAcceptedMatching(Long managerId, ServiceName type, Pageable pageable) {
+
+        Page<Nominee> nominees = nomineeRepository.findRequestMatching(managerId, type, pageable);
+        return nominees.map(nominee ->
+                ReadAcceptedMatchingResponseDto.fromEntity(nominee.getContract(), nominee.getId())
+        );
     }
 }
