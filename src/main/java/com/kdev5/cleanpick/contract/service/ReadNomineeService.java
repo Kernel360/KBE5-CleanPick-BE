@@ -16,8 +16,7 @@ public class ReadNomineeService {
     private final NomineeRepository nomineeRepository;
 
     @Transactional(readOnly = true)
-    public Page<ReadRequestedMatchingResponseDto> readRequestedMatching(Long managerId, boolean isPersonal, Pageable pageable) {
-
+    public Page<ReadRequestedMatchingResponseDto> readRequestedMatching(Long managerId, Boolean isPersonal, Pageable pageable) {
 
         Page<Nominee> nominees = nomineeRepository.findRequestedMatching(managerId, isPersonal, pageable);
         return nominees.map(nominee ->
