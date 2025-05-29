@@ -4,6 +4,7 @@ import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.domain.Nominee;
 import com.kdev5.cleanpick.contract.domain.QContract;
 import com.kdev5.cleanpick.contract.domain.QNominee;
+import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.domain.enumeration.MatchingStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
@@ -56,7 +57,8 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
     public Page<Nominee> findConfirmedMatching(Long managerId, ServiceName serviceName, String sortType, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder()
                 .and(nominee.status.eq(MatchingStatus.CONFIRMED))
-                .and(nominee.manager.id.eq(managerId));
+                .and(nominee.manager.id.eq(managerId))
+                .and(nominee.contract.status.in(ContractStatus.작업전, ContractStatus.작업중));
 
         if (serviceName != null) builder.and(contract.cleaning.serviceName.eq(serviceName));
 
