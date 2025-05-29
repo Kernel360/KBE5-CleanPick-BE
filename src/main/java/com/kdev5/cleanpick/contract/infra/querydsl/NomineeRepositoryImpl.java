@@ -6,17 +6,21 @@ import com.kdev5.cleanpick.contract.domain.QContract;
 import com.kdev5.cleanpick.contract.domain.QNominee;
 import com.kdev5.cleanpick.contract.domain.enumeration.MatchingStatus;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.kdev5.cleanpick.cleaning.domain.QCleaning.cleaning;
 import static com.kdev5.cleanpick.customer.domain.QCustomer.customer;
+import static com.kdev5.cleanpick.manager.domain.QManager.manager;
 
 @RequiredArgsConstructor
 public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
@@ -56,7 +60,7 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
     }
 
     @Override
-    public Page<Nominee> findRequestMatching(Long managerId, ServiceName type, Pageable pageable) {
+    public Page<Nominee> readAcceptedMatching(Long managerId, ServiceName type, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(nominee.manager.id.eq(managerId));
@@ -83,5 +87,47 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    @Override
+    public Page<Nominee> findConfirmedMatching(Long managerId, ServiceName serviceType, String sortType, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder()
+                .and(nominee.status.eq(MatchingStatus.CONFIRMED))
+                // 후보자와 계약의 매니저가 항상 같아야 하므로 이중 체크
+                .and(nominee.contract.manager.id.eq(managerId))
+                .and(nominee.manager.id.eq(managerId));
+
+        if (serviceType != null) builder.and(contract.cleaning.serviceName.eq(serviceType));
+
+        List<Nominee> content = queryFactory
+                .selectFrom(nominee)
+                .join(nominee.contract, contract).fetchJoin()
+                .join(contract.cleaning, cleaning).fetchJoin()
+                .join(contract.customer, customer).fetchJoin()
+                .join(contract.manager, manager).fetchJoin()
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(getOrderSpecifier(sortType))
+                .fetch();
+
+        Long total = queryFactory
+                .select(nominee.count())
+                .from(nominee)
+                .join(nominee.contract, contract)
+                .where(builder)
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    private OrderSpecifier<LocalDateTime> getOrderSpecifier(String sortType) {
+        Order order = Order.DESC;
+
+        if ("contract".equalsIgnoreCase(sortType)) {
+            return new OrderSpecifier<>(order, contract.contractDate);
+        } else {
+            return new OrderSpecifier<>(order, nominee.updatedAt);
+        }
     }
 }

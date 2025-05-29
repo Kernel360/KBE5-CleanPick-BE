@@ -3,6 +3,7 @@ package com.kdev5.cleanpick.contract.controller;
 import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.service.ReadNomineeService;
 import com.kdev5.cleanpick.contract.service.dto.response.ReadAcceptedMatchingResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.response.ReadConfirmedMatchingResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.ReadRequestedMatchingResponseDto;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
@@ -42,6 +43,17 @@ public class NomineeController {
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readAcceptedMatching(managerId, type, PageRequest.of(page, size)))));
+    }
+
+    @GetMapping("/confirmed")
+    @Operation(summary = "최종 매칭된 목록 조회", description = "매니저와 수요자 서로 accept한 목록(최종 매칭된 목록)을 조회합니다.sortType은 최근 매칭순(MATCHED), 계약일순(CONTRACT) 입니다.")
+    public ResponseEntity<ApiResponse<PageResponse<ReadConfirmedMatchingResponseDto>>> readConfirmedMatching(
+            @RequestParam(value = "serviceType", required = false) ServiceName serviceType,
+            @RequestParam(value = "sortType") String sortType,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readConfirmedMatching(managerId, serviceType, sortType, PageRequest.of(page, size)))));
     }
 
 }
