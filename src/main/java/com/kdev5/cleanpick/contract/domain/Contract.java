@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "contract")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "deleted_at IS NULL")
 public class Contract extends BaseTimeEntity {
 
     @Id
@@ -71,7 +73,11 @@ public class Contract extends BaseTimeEntity {
         this.status = status;
     }
 
+    public void updateDate(LocalDateTime date) {
+        this.contractDate = date;
+      
     public void updateManager(Manager manager) {
         this.manager = manager;
+
     }
 }

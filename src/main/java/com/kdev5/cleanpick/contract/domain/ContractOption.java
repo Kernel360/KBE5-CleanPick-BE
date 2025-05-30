@@ -7,10 +7,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
-
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "contract_option",

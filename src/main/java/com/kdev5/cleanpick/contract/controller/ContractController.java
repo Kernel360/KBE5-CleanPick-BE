@@ -1,5 +1,10 @@
 package com.kdev5.cleanpick.contract.controller;
 
+
+import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
+import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.contract.service.ReadContractService;
@@ -35,16 +40,16 @@ public class ContractController {
     // 1. 청소 요청 글 작성
     // 1-1. 1회성 청소
     @PostMapping("/one")
-    public ApiResponse<OneContractResponseDto> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
+    public ResponseEntity<ApiResponse<OneContractResponseDto>> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
         OneContractResponseDto newContract = contractService.createOneContract(contractDto);
-        return ApiResponse.ok(newContract);
+        return ResponseEntity.ok(ApiResponse.ok(newContract));
     }
 
     // 1-2. 정기 청소
     @PostMapping("/routine")
-    public ApiResponse<RoutineContractResponseDto> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
+    public ResponseEntity<ApiResponse<RoutineContractResponseDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
         RoutineContractResponseDto newContracts = contractService.createRoutineContract(contractDto);
-        return ApiResponse.ok(newContracts);
+        return ResponseEntity.ok(ApiResponse.ok(newContracts));
     }
 
     @GetMapping("/{contractId}")
@@ -79,9 +84,18 @@ public class ContractController {
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readManagerCompletedContracts(userId, role, pageable))));
     }
 
-    @PutMapping
-    public ApiResponse<OneContractResponseDto> changeContract(@RequestBody @Valid ContractRequestDto contractDto) {
-        return null;
+    // Contract 수정
+    @PutMapping("/{contractId}")
+    public ResponseEntity<ApiResponse<Void>> changeContract(@RequestBody @Valid UpdateContractRequestDto dto, @PathVariable("contractId") Long contractId) {
+        contractService.updateOneContract(dto, contractId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    //Contract 삭제
+    @DeleteMapping("/{contractId}")
+    public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable("contractId") Long contractId) {
+        contractService.deleteOneContract(contractId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     @GetMapping("/pending")
