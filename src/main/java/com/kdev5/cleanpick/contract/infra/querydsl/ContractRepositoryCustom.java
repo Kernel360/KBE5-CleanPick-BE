@@ -13,5 +13,7 @@ import java.util.List;
 public interface ContractRepositoryCustom {
     Page<Contract> findByFilter(Long userId, String role, ContractFilterStatus filter, Pageable pageable);
 
-    List<Contract> findContractsWithManagerByManagerAndStatusAndContractDateBetween(Manager manager, ContractStatus status, LocalDateTime start, LocalDateTime end);
+    List<Contract> findContractsByManagerAndStatusWithinDateRange(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end);
+
+    Integer sumMonthlyTotalPriceByManager(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end);
 }

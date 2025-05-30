@@ -12,7 +12,6 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
@@ -28,107 +27,92 @@ public class RevenueService {
 
     public ReadMonthlyRevenueResponseDto readMonthlyRevenue(Long userId, ContractStatus status, YearMonth yearMonth) {
 
-        List<Contract> contracts = contractRepository.findContractsWithManagerByManagerAndStatusAndContractDateBetween(
+        List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
                 findMember(userId),
-                status,
+                List.of(status),
                 yearMonth.atDay(1).atStartOfDay(),
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
 
-        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
-                .map(ReadWorkHistoryResponseDto::fromEntity)
-                .toList();
-
-        double total = histories.stream()
-                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
-                .sum();
-
-        return ReadMonthlyRevenueResponseDto.builder()
-                .totalPrice((long) total)
-                .year(yearMonth.getYear())
-                .month(yearMonth.getMonthValue())
-                .workHistoryDtos(histories)
-                .build();
-
-    }
-
-    public Double readPredictedRevenue(Long userId) {
-        YearMonth yearMonth = YearMonth.from(LocalDate.now());
-
-        return CHARGE_RATE * contractRepository.sumMonthlyTotalPriceByManager(
-                findMember(userId),
-                yearMonth.atDay(1).atStartOfDay(),
-                yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
-        );
+        return toRevenueResponse(contracts, yearMonth.getYear(), yearMonth.getMonthValue());
     }
 
     public Double readConfirmedRevenue(Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        return CHARGE_RATE * contractRepository.sumMonthlyTotalPriceByManager(
+
+        YearMonth yearMonth = YearMonth.from(LocalDateTime.now());
+
+
+        Integer sum = contractRepository.sumMonthlyTotalPriceByManager(
                 findMember(userId),
-                YearMonth.from(now).atDay(1).atStartOfDay(),
-                now
-        );
-    }
-
-    public ReadMonthlyRevenueResponseDto readPredictedRevenueList(Long userId) {
-
-        LocalDateTime now = LocalDateTime.now();
-
-        List<Contract> contracts = contractRepository.findContractsWithManagerByManagerAndStatusAndContractDateBetween(
-                findMember(userId),
-                null,
-                now,
-                YearMonth.from(now).atEndOfMonth().atTime(LocalTime.MAX)
+                List.of(ContractStatus.작업후, ContractStatus.정산전, ContractStatus.정산완료),
+                yearMonth.atDay(1).atStartOfDay(),
+                yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
 
-        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
-                .map(ReadWorkHistoryResponseDto::fromEntity)
-                .toList();
-
-        double total = histories.stream()
-                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
-                .sum();
-
-        return ReadMonthlyRevenueResponseDto.builder()
-                .totalPrice((long) total)
-                .year(now.getYear())
-                .month(now.getMonthValue())
-                .workHistoryDtos(histories)
-                .build();
-
+        return CHARGE_RATE * (sum != null ? sum : 0);
     }
 
     public ReadMonthlyRevenueResponseDto readConfirmedRevenueList(Long userId) {
 
-        LocalDateTime now = LocalDateTime.now();
+        YearMonth yearMonth = YearMonth.from(LocalDateTime.now());
 
-        List<Contract> contracts = contractRepository.findContractsWithManagerByManagerAndStatusAndContractDateBetween(
+        List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
                 findMember(userId),
-                ContractStatus.정산전,
-                YearMonth.from(now).atDay(1).atStartOfDay(),
-                now
+                List.of(ContractStatus.작업후, ContractStatus.정산전, ContractStatus.정산완료),
+                yearMonth.atDay(1).atStartOfDay(),
+                yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
 
-        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
-                .map(ReadWorkHistoryResponseDto::fromEntity)
-                .toList();
+        return toRevenueResponse(contracts, yearMonth.getYear(), yearMonth.getMonthValue());
+    }
 
-        double total = histories.stream()
-                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
-                .sum();
+    public Double readPredictedRevenue(Long userId) {
 
-        return ReadMonthlyRevenueResponseDto.builder()
-                .totalPrice((long) total)
-                .year(now.getYear())
-                .month(now.getMonthValue())
-                .workHistoryDtos(histories)
-                .build();
+        YearMonth yearMonth = YearMonth.from(LocalDateTime.now());
 
+        Integer sum = contractRepository.sumMonthlyTotalPriceByManager(
+                findMember(userId),
+                null,
+                yearMonth.atDay(1).atStartOfDay(),
+                yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
+        );
+
+        return CHARGE_RATE * (sum != null ? sum : 0);
+    }
+
+    public ReadMonthlyRevenueResponseDto readPredictedRevenueList(Long userId) {
+
+        YearMonth yearMonth = YearMonth.from(LocalDateTime.now());
+
+        List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
+                findMember(userId),
+                List.of(ContractStatus.작업전, ContractStatus.작업중),
+                yearMonth.atDay(1).atStartOfDay(),
+                yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
+        );
+
+        return toRevenueResponse(contracts, yearMonth.getYear(), yearMonth.getMonthValue());
     }
 
 
     private Manager findMember(Long userId) {
         return managerRepository.findById(userId).orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
+    }
+
+    private ReadMonthlyRevenueResponseDto toRevenueResponse(List<Contract> contracts, int year, int month) {
+        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
+                .map(ReadWorkHistoryResponseDto::fromEntity)
+                .toList();
+
+        double total = histories.stream()
+                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
+                .sum();
+
+        return ReadMonthlyRevenueResponseDto.builder()
+                .year(year)
+                .month(month)
+                .totalPrice(total)
+                .workHistoryDtos(histories)
+                .build();
     }
 }

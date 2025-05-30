@@ -7,14 +7,14 @@ import java.util.List;
 
 @Getter
 public class ReadMonthlyRevenueResponseDto {
-    final Long totalPrice;
+    final Double totalPrice;
     final Integer year;
     final Integer month;
     final List<ReadWorkHistoryResponseDto> histories;
 
 
     @Builder
-    public ReadMonthlyRevenueResponseDto(Long totalPrice, Integer year, Integer month, List<ReadWorkHistoryResponseDto> workHistoryDtos) {
+    public ReadMonthlyRevenueResponseDto(Double totalPrice, Integer year, Integer month, List<ReadWorkHistoryResponseDto> workHistoryDtos) {
         this.totalPrice = totalPrice;
         this.year = year;
         this.month = month;

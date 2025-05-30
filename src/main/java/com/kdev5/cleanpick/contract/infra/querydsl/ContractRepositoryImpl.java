@@ -68,7 +68,9 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    public List<Contract> findContractsWithManagerByManagerAndStatusAndContractDateBetween(Manager manager, ContractStatus status, LocalDateTime start, LocalDateTime end) {
+    //TODO: 병합 후 deleted_at null 조건 추가
+    @Override
+    public List<Contract> findContractsByManagerAndStatusWithinDateRange(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end) {
         QContract contract = QContract.contract;
 
         return queryFactory
@@ -77,10 +79,26 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
                 .where(
                         contract.manager.eq(manager),
                         contract.contractDate.between(start, end),
-                        status != null ? contract.status.eq(status) : null
+                        statuses != null && !statuses.isEmpty() ? contract.status.in(statuses) : null
                 )
                 .fetch();
     }
+
+    @Override
+    public Integer sumMonthlyTotalPriceByManager(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end) {
+        QContract contract = QContract.contract;
+
+        return queryFactory
+                .select(contract.totalPrice.sum())
+                .from(contract)
+                .where(
+                        contract.manager.eq(manager),
+                        contract.contractDate.between(start, end),
+                        statuses != null && !statuses.isEmpty() ? contract.status.in(statuses) : null
+                )
+                .fetchOne();
+    }
+
 
 }
 
