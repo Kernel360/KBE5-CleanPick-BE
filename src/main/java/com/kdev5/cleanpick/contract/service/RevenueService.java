@@ -71,6 +71,62 @@ public class RevenueService {
         );
     }
 
+    public ReadMonthlyRevenueResponseDto readPredictedRevenueList(Long userId) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Contract> contracts = contractRepository.findContractsWithManagerByManagerAndStatusAndContractDateBetween(
+                findMember(userId),
+                null,
+                now,
+                YearMonth.from(now).atEndOfMonth().atTime(LocalTime.MAX)
+        );
+
+        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
+                .map(ReadWorkHistoryResponseDto::fromEntity)
+                .toList();
+
+        double total = histories.stream()
+                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
+                .sum();
+
+        return ReadMonthlyRevenueResponseDto.builder()
+                .totalPrice((long) total)
+                .year(now.getYear())
+                .month(now.getMonthValue())
+                .workHistoryDtos(histories)
+                .build();
+
+    }
+
+    public ReadMonthlyRevenueResponseDto readConfirmedRevenueList(Long userId) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Contract> contracts = contractRepository.findContractsWithManagerByManagerAndStatusAndContractDateBetween(
+                findMember(userId),
+                ContractStatus.정산전,
+                YearMonth.from(now).atDay(1).atStartOfDay(),
+                now
+        );
+
+        List<ReadWorkHistoryResponseDto> histories = contracts.stream()
+                .map(ReadWorkHistoryResponseDto::fromEntity)
+                .toList();
+
+        double total = histories.stream()
+                .mapToDouble(ReadWorkHistoryResponseDto::getPrice)
+                .sum();
+
+        return ReadMonthlyRevenueResponseDto.builder()
+                .totalPrice((long) total)
+                .year(now.getYear())
+                .month(now.getMonthValue())
+                .workHistoryDtos(histories)
+                .build();
+
+    }
+
 
     private Manager findMember(Long userId) {
         return managerRepository.findById(userId).orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));

@@ -6,6 +6,7 @@ import com.kdev5.cleanpick.contract.domain.QContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.user.domain.exception.InvalidUserRoleException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -65,5 +67,20 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
+
+    public List<Contract> findContractsWithManagerByManagerAndStatusAndContractDateBetween(Manager manager, ContractStatus status, LocalDateTime start, LocalDateTime end) {
+        QContract contract = QContract.contract;
+
+        return queryFactory
+                .selectFrom(contract)
+                .join(contract.manager).fetchJoin()
+                .where(
+                        contract.manager.eq(manager),
+                        contract.contractDate.between(start, end),
+                        status != null ? contract.status.eq(status) : null
+                )
+                .fetch();
+    }
+
 }
 

@@ -34,15 +34,27 @@ public class RevenueController {
     }
 
     @GetMapping("/predicted")
-    @Operation(summary = "이번달 예상 수입", description = "이번달 예상 수입을 조회합니다.")
+    @Operation(summary = "이번달 예상 수입 금액", description = "이번달 예상 수입 금액을 조회합니다.")
     public ResponseEntity<ApiResponse<Double>> readPredictedRevenue() {
         return ResponseEntity.ok(ApiResponse.ok(revenueService.readPredictedRevenue(userId)));
     }
 
     @GetMapping("/confirmed")
-    @Operation(summary = "오늘까지 확정 수입", description = "이번 달, 오늘까지 확정 수입을 조회합니다.")
+    @Operation(summary = "오늘까지 확정 수입 금액", description = "이번 달, 오늘까지 확정 수입 금액을 조회합니다.")
     public ResponseEntity<ApiResponse<Double>> readConfirmedRevenue() {
         return ResponseEntity.ok(ApiResponse.ok(revenueService.readConfirmedRevenue(userId)));
+    }
+
+    @GetMapping("/predicted/list")
+    @Operation(summary = "이번달 예상 수입 목록", description = "이번달 예상 수입 목록(작업 예정 목록)을 조회합니다.")
+    public ResponseEntity<ApiResponse<ReadMonthlyRevenueResponseDto>> readPredictedRevenueList() {
+        return ResponseEntity.ok(ApiResponse.ok(revenueService.readPredictedRevenueList(userId)));
+    }
+
+    @GetMapping("/confirmed/list")
+    @Operation(summary = "이번달 확정 수입 목록", description = "이번달 확정 수입 목록(작업 완료 목록)을 조회합니다.")
+    public ResponseEntity<ApiResponse<ReadMonthlyRevenueResponseDto>> readConfirmedRevenueList() {
+        return ResponseEntity.ok(ApiResponse.ok(revenueService.readConfirmedRevenueList(userId)));
     }
 
 }
