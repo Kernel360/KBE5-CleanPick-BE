@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.contract.service;
 
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
+import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.common.util.DateTimeUtil;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
@@ -44,7 +45,7 @@ public class ReadContractServiceTest {
     Long contractId = 1L;
     Customer customer = mock(Customer.class);
     Manager manager = mock(Manager.class);
-    Cleaning cleaning = Cleaning.builder().serviceName("특수청소").build();
+    Cleaning cleaning = Cleaning.builder().serviceName(ServiceName.HOOD).build();
     Contract contract = Contract.builder().manager(manager).customer(customer).cleaning(cleaning).status(ContractStatus.작업전).contractDate(LocalDateTime.now()).build();
 
     @BeforeEach
@@ -86,7 +87,7 @@ public class ReadContractServiceTest {
         ReadContractDetailResponseDto result = readContractService.readContractDetail(contractId);
 
         // then
-        assertThat(result.getServiceName()).isEqualTo("특수청소");
+        assertThat(result.getServiceName()).isEqualTo(ServiceName.HOOD.getDescription());
         assertThat(result.getContractDate()).isEqualTo(parts.getDate());
         assertThat(result.getContractStartTime()).isEqualTo(parts.getTime());
 
@@ -111,13 +112,16 @@ public class ReadContractServiceTest {
     void 계약리스트조회_성공() {
         // given
 
-        when(contractRepository.findByFilter(eq(1L), eq(ContractFilterStatus.WAITING_MATCH), any(Pageable.class)))
+        when(contractRepository.findByFilter(
+                eq(1L), eq("ROLE_USER"), eq(ContractFilterStatus.WAITING_MATCH), any(Pageable.class))
+        )
                 .thenReturn(new PageImpl<>(List.of(contract)));
+
 
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<ReadContractResponseDto> result = readContractService.readContracts(ContractFilterStatus.WAITING_MATCH, pageable);
+        Page<ReadContractResponseDto> result = readContractService.readCustomerContracts(1L, "ROLE_USER", ContractFilterStatus.WAITING_MATCH, pageable);
 
         // then
         assertThat(result.getContent()).hasSize(1);

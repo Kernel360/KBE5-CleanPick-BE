@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.contract.controller;
 
 import com.kdev5.cleanpick.contract.service.ContractMatchingService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/matching")
+@Tag(name = "matching API", description = "매칭 상태를 변경하는(수락/거절) 컨트롤러")
 public class MatchingController {
     private final ContractMatchingService contractMatchingService;
 

@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.review.service;
 
 import com.kdev5.cleanpick.contract.domain.Contract;
-import com.kdev5.cleanpick.contract.domain.exception.ContractException;
+import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
@@ -84,8 +84,8 @@ class ReviewServiceTest {
     void setUp() {
         // 기본 테스트용 엔티티 생성
         contract = Contract.builder().build();
-        customer = Customer.builder().id(1L).build();
-        manager = new Manager();
+        customer = mock(Customer.class);
+        manager = mock(Manager.class);
     }
 
     @Test
@@ -128,7 +128,7 @@ class ReviewServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reviewService.writeReview(reqDto, null))
-                .isInstanceOf(ContractException.class);
+                .isInstanceOf(ContractNotFoundException.class);
     }
 
     @Test
@@ -207,7 +207,7 @@ class ReviewServiceTest {
         when(file1.getReviewFileUrl()).thenReturn("url1");
         when(file2.getReviewFileUrl()).thenReturn("url2");
         when(file3.getReviewFileUrl()).thenReturn("url3");
-        
+
         Review review1 = mock(Review.class);
         Review review2 = mock(Review.class);
         Review review3 = mock(Review.class);
