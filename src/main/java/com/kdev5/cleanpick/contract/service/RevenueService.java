@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class RevenueService {
 
         List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
                 findMember(userId),
-                List.of(status),
+                status != null ? List.of(status) : Collections.emptyList(),
                 yearMonth.atDay(1).atStartOfDay(),
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
