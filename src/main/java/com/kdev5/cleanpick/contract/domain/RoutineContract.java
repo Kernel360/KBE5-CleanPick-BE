@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "routine_contract")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "is_deleted = false")
+@Where(clause = "deleted_at IS NULL")
 public class RoutineContract extends BaseTimeEntity {
 
     @Id

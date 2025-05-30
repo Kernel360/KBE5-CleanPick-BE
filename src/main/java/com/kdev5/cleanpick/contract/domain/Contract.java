@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "contract")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "is_deleted = false")
+@Where(clause = "deleted_at IS NULL")
 public class Contract extends BaseTimeEntity {
 
     @Id

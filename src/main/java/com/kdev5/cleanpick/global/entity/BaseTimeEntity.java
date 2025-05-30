@@ -23,11 +23,11 @@ public class BaseTimeEntity {
     @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean deleted = false;
+    @Column(name = "deleted_at", nullable = true)
+    private LocalDateTime deletedAt;
 
     public void softDelete() {
-        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 
 }

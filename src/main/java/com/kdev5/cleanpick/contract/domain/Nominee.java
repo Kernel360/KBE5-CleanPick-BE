@@ -11,7 +11,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "nominee")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Where(clause = "is_deleted = false")
+@Where(clause = "deleted_at IS NULL")
 public class Nominee extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

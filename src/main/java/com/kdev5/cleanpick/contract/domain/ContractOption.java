@@ -11,7 +11,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
-@Where(clause = "is_deleted = false")
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "contract_option",
