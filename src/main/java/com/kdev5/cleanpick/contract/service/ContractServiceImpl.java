@@ -10,6 +10,7 @@ import com.kdev5.cleanpick.cleaning.infra.CleaningRepository;
 import com.kdev5.cleanpick.common.util.ContractDateUtil;
 import com.kdev5.cleanpick.contract.domain.Contract;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
+import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
@@ -54,6 +55,10 @@ public class ContractServiceImpl implements ContractService {
     private final CleaningOptionRepository cleaningOptionRepository;
     private final ManagerAvailableTimeRepository managerAvailableTimeRepository;
 
+
+    // TODO 로그인 연결
+    private final Long userId = 1L;
+
     // Entity 조회
     public Customer findCustomer(Long customerId) {
         return customerRepository.findById(customerId)
@@ -61,7 +66,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
     public Manager findManagerIfPresent(Long managerId) {
-        System.out.println("findManagerIfPresent: " + managerId);
         if (managerId == null) return null;
         return managerRepository.findById(managerId)
                 .orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));
@@ -238,6 +242,7 @@ public class ContractServiceImpl implements ContractService {
             // 2. 매니저 다른 계약과 겹치지 않는지 확인
             validateNoScheduleConflict(manager, contract.getId(), newDateTime, durationHours);
 
+            // TODO 매니저 승인 후, 수정하도록 -> 그럼 수정 요청한 날짜를 따로 저장하는 컬럼(or 테이블)도 있어야되나.?
             contract.updateDate(newDateTime);
         }
 
@@ -250,8 +255,14 @@ public class ContractServiceImpl implements ContractService {
     public void deleteOneContract(@Valid Long contractId) {
         Contract contract = findContract(contractId);
         ContractDetail contractDetail = findContractDetail(contractId);
+        List<ContractOption> contractOptionList = contractOptionRepository.findAllByContractId(contractId);
+
         contract.softDelete();
         contractDetail.softDelete();
+        for ( ContractOption contractOption : contractOptionList ) {
+            contractOption.softDelete();
+        }
+
     }
 
 }
