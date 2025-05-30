@@ -87,7 +87,7 @@ public class JwtLoginAuthenticationFilter extends UsernamePasswordAuthentication
         String jwtToken = JwtProcessor.create(loginUser);
         response.addHeader(JwtParams.HEADER, jwtToken);
 
-        UserResponseDto loginRespDto = new UserResponseDto(loginUser.getId(), loginUser.getUsername());
+        UserResponseDto loginRespDto = new UserResponseDto(loginUser.getId(), loginUser.getEmail(), loginUser.getStatus());
         String responseBody = objectMapper.writeValueAsString(loginRespDto);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

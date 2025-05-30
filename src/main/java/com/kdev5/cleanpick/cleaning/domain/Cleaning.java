@@ -1,5 +1,6 @@
 package com.kdev5.cleanpick.cleaning.domain;
 
+import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,14 +16,15 @@ public class Cleaning extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "service_name", length = 255, nullable = false)
-    private String serviceName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceName serviceName;
 
     @Lob
     private String content;
 
     @Builder
-    public Cleaning(String serviceName, String content) {
+    public Cleaning(ServiceName serviceName, String content) {
         this.serviceName = serviceName;
         this.content = content;
     }

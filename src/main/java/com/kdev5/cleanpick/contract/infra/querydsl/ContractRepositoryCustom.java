@@ -6,5 +6,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ContractRepositoryCustom {
-    Page<Contract> findByFilter(Long customerId, ContractFilterStatus filter, Pageable pageable);
+    Page<Contract> findByFilter(Long userId, String role, ContractFilterStatus filter, Pageable pageable);
 }

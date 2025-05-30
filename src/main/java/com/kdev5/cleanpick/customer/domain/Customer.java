@@ -30,18 +30,22 @@ public class Customer extends BaseTimeEntity {
     private String phoneNumber;
 
     @Column(length = 255)
-    private String address;
+    private String mainAddress;
+
+    @Column(length = 255)
+    private String subAddress;
 
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
 
 
     @Builder
-    public Customer(Long id, String name, String phoneNumber, String address, String profileImageUrl, User user) {
+    public Customer(Long id, String name, String phoneNumber, String mainAddress, String subAddress,  String profileImageUrl, User user) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.address = address;
+        this.mainAddress = mainAddress;
+        this.subAddress = subAddress;
         this.profileImageUrl = profileImageUrl;
         this.user = user;
     }

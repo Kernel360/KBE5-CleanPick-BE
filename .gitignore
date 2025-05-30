@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/*.yml
+src/main/resources/data.sql
 node_mudules/
 a
 ### STS ###
@@ -41,3 +42,6 @@ out/
 application.yml
 ### QueryDSL generated Q classes ###
 /src/main/generated/
+/src/main/java/com/kdev5/cleanpick/dev
+
+Dockerfile

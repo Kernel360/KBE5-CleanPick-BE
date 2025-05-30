@@ -75,5 +75,9 @@ public class Contract extends BaseTimeEntity {
 
     public void updateDate(LocalDateTime date) {
         this.contractDate = date;
+      
+    public void updateManager(Manager manager) {
+        this.manager = manager;
+
     }
 }

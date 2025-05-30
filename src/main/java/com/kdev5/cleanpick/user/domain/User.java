@@ -29,13 +29,27 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Builder
-    public User(Long id, String email, String password, LoginType loginType, Role role) {
-        this.id = id;
+    public User(String email, String password, LoginType loginType, Role role, Status status) {
         this.email = email;
         this.password = password;
         this.loginType = loginType;
         this.role = role;
+        this.status = status;
+    }
+
+    public static User forAuthentication(Long id, Role role) {
+        User user = new User();
+        user.id = id;
+        user.role = role;
+        return user;
+    }
+
+    public void activate(User user) {
+        user.status = Status.ACTIVE;
     }
 
 }

@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +30,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
@@ -40,6 +42,9 @@ public class Review extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewType type;
+
+    @OneToMany(mappedBy = "review", fetch = FetchType.LAZY)
+    private List<ReviewFile> reviewFiles;
 
     @Builder
     public Review(Customer customer, Manager manager, Contract contract, float rating, String content, ReviewType type) {
