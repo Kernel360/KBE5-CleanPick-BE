@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     VALIDATION_FAIL(HttpStatus.BAD_REQUEST, "VALIDATION_FAIL", "입력값이 유효하지 않습니다."),
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "INVALID_USER_ROLE", "허용되지 않은 역할입니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "EMAIL_ALREADY_EXISTS", "이미 가입된 이메일입니다."),
     CONTRACT_NOT_FOUND(HttpStatus.BAD_REQUEST, "CONTRACT_NOT_FOUND", "계약을 찾을 수 없습니다."),
     CONTRACT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "CONTRACT_BAD_REQUEST", "1:1 계약이 아닙니다."),

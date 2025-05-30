@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "contract API", description = "계약글 CRUD 컨트롤러")
 public class ContractController {
 
-    private static final Long managerId = 1L; // TODO
+    private static final Long userId = 1L; // TODO
+    private static final String role = "ROLE_MANAGER";
 
     private final ReadNomineeService readNomineeService;
     private final ReadContractService readContractService;
@@ -50,9 +52,31 @@ public class ContractController {
         return ResponseEntity.ok(ApiResponse.ok(readContractService.readContractDetail(contractId)));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ReadContractResponseDto>>> read(@RequestParam("status") ContractFilterStatus status, Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readContracts(status, pageable))));
+    @GetMapping("/user")
+    @Operation(summary = "[수요자]예약 목록 조회", description = "수요자가 신청한 예약 목록을 조회합니다. 매칭 전, 작업 전(중)/후로 나누어 확인 가능합니다. ")
+    public ResponseEntity<ApiResponse<PageResponse<ReadContractResponseDto>>> readCustomerContracts(
+            @RequestParam("status") ContractFilterStatus status,
+            @RequestParam("sortType") String sortType,
+            @RequestParam("order") String order,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortType));
+
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readCustomerContracts(userId, role, status, pageable))));
+    }
+
+    @GetMapping("/manager/completed")
+    @Operation(summary = "[매니저] 예약 목록 조회", description = "매니저가 완료한 예약 목록을 조회합니다.")
+    public ResponseEntity<ApiResponse<PageResponse<ReadConfirmedMatchingResponseDto>>> readManagerCompletedContracts(
+            @RequestParam("sortType") String sortType,
+            @RequestParam("order") String order,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortType));
+
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readManagerCompletedContracts(userId, role, pageable))));
     }
 
     @PutMapping
@@ -67,7 +91,7 @@ public class ContractController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readRequestedMatching(managerId, isPersonal, PageRequest.of(page, size)))));
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readRequestedMatching(userId, isPersonal, PageRequest.of(page, size)))));
     }
 
     @GetMapping("/accepted")
@@ -77,7 +101,7 @@ public class ContractController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readAcceptedMatching(managerId, type, PageRequest.of(page, size)))));
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readAcceptedMatching(userId, type, PageRequest.of(page, size)))));
     }
 
     @GetMapping("/confirmed")
@@ -88,7 +112,7 @@ public class ContractController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readConfirmedMatching(managerId, serviceType, sortType, PageRequest.of(page, size)))));
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readConfirmedMatching(userId, serviceType, sortType, PageRequest.of(page, size)))));
     }
 }
 
