@@ -57,7 +57,7 @@ public class ContractController {
     }
 
     //Contract 삭제
-    @PostMapping("/{contractId}")
+    @DeleteMapping("/{contractId}")
     public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable("contractId") Long contractId) {
         contractService.deleteOneContract(contractId);
         return ResponseEntity.ok(ApiResponse.ok(null));
