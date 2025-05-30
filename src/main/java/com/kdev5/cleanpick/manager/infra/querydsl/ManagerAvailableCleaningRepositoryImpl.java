@@ -2,9 +2,6 @@ package com.kdev5.cleanpick.manager.infra.querydsl;
 
 import com.kdev5.cleanpick.cleaning.domain.QCleaning;
 import com.kdev5.cleanpick.manager.domain.QManagerAvailableCleaning;
-import com.kdev5.cleanpick.manager.domain.QManagerAvailableRegion;
-import com.kdev5.cleanpick.manager.domain.QRegion;
-import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableCleaningRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +32,7 @@ public class ManagerAvailableCleaningRepositoryImpl implements ManagerAvailableC
 
         return result.stream().collect(Collectors.groupingBy(
                 tuple -> tuple.get(mac.manager.id),
-                Collectors.mapping(tuple -> tuple.get(cleaning.serviceName), Collectors.toList())
+                Collectors.mapping(tuple -> tuple.get(cleaning.serviceName.stringValue()), Collectors.toList())
         ));
     }
 }
