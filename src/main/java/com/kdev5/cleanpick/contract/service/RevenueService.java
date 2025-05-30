@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.List;
@@ -60,6 +61,16 @@ public class RevenueService {
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
     }
+
+    public Double readConfirmedRevenue(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        return CHARGE_RATE * contractRepository.sumMonthlyTotalPriceByManager(
+                findMember(userId),
+                YearMonth.from(now).atDay(1).atStartOfDay(),
+                now
+        );
+    }
+
 
     private Manager findMember(Long userId) {
         return managerRepository.findById(userId).orElseThrow(() -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND));

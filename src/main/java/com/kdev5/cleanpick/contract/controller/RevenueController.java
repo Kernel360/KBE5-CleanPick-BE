@@ -39,4 +39,10 @@ public class RevenueController {
         return ResponseEntity.ok(ApiResponse.ok(revenueService.readPredictedRevenue(userId)));
     }
 
+    @GetMapping("/confirmed")
+    @Operation(summary = "오늘까지 확정 수입", description = "이번 달, 오늘까지 확정 수입을 조회합니다.")
+    public ResponseEntity<ApiResponse<Double>> readConfirmedRevenue() {
+        return ResponseEntity.ok(ApiResponse.ok(revenueService.readConfirmedRevenue(userId)));
+    }
+
 }
