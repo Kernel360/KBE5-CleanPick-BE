@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.manager.infra.querydsl;
 
 
 import com.kdev5.cleanpick.cleaning.domain.QCleaning;
+import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.manager.domain.*;
 import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
 import com.kdev5.cleanpick.review.domain.QReview;
@@ -44,7 +45,7 @@ public class ManagerRepositoryImpl implements ManagerRepositoryCustom {
         if (cleaning != null) {
             query.join(mac).on(mac.manager.eq(manager))
                     .join(mac.cleaning, cleaningEntity)
-                    .where(cleaningEntity.serviceName.eq(cleaning));
+                    .where(cleaningEntity.serviceName.eq(ServiceName.valueOf(cleaning)));
         }
 
         if (region != null) {

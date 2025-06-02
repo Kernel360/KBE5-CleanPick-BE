@@ -6,6 +6,7 @@ import com.kdev5.cleanpick.contract.domain.QContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.user.domain.exception.InvalidUserRoleException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -65,5 +67,38 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
+
+    //TODO: 병합 후 deleted_at null 조건 추가
+    @Override
+    public List<Contract> findContractsByManagerAndStatusWithinDateRange(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end) {
+        QContract contract = QContract.contract;
+
+        return queryFactory
+                .selectFrom(contract)
+                .join(contract.manager).fetchJoin()
+                .where(
+                        contract.manager.eq(manager),
+                        contract.contractDate.between(start, end),
+                        statuses != null && !statuses.isEmpty() ? contract.status.in(statuses) : null
+                )
+                .fetch();
+    }
+
+    @Override
+    public Integer sumMonthlyTotalPriceByManager(Manager manager, List<ContractStatus> statuses, LocalDateTime start, LocalDateTime end) {
+        QContract contract = QContract.contract;
+
+        return queryFactory
+                .select(contract.totalPrice.sum())
+                .from(contract)
+                .where(
+                        contract.manager.eq(manager),
+                        contract.contractDate.between(start, end),
+                        statuses != null && !statuses.isEmpty() ? contract.status.in(statuses) : null
+                )
+                .fetchOne();
+    }
+
+
 }
 
