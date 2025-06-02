@@ -42,6 +42,7 @@ public class Customer extends BaseTimeEntity {
 
     private Double longitude;
 
+    @Builder
     public Customer(Long id, User user, String name, String phoneNumber, String mainAddress, String subAddress,
         String profileImageUrl, Double latitude, Double longitude) {
         this.id = id;
