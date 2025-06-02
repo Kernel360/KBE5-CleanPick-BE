@@ -46,7 +46,7 @@ public class ReadContractServiceTest {
     Customer customer = mock(Customer.class);
     Manager manager = mock(Manager.class);
     Cleaning cleaning = Cleaning.builder().serviceName(ServiceName.HOOD).build();
-    Contract contract = Contract.builder().manager(manager).customer(customer).cleaning(cleaning).status(ContractStatus.작업전).contractDate(LocalDateTime.now()).build();
+    Contract contract = Contract.builder().manager(manager).customer(customer).cleaning(cleaning).status(ContractStatus.NOT_STARTED).contractDate(LocalDateTime.now()).build();
 
     @BeforeEach
     void setUp() {
@@ -125,7 +125,7 @@ public class ReadContractServiceTest {
 
         // then
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).contractStatus()).isEqualTo(ContractStatus.작업전.toString());
+        assertThat(result.getContent().get(0).contractStatus()).isEqualTo(ContractStatus.NOT_STARTED.toString());
 
     }
 }

@@ -58,7 +58,7 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder()
                 .and(nominee.status.eq(MatchingStatus.CONFIRMED))
                 .and(nominee.manager.id.eq(managerId))
-                .and(nominee.contract.status.in(ContractStatus.작업전, ContractStatus.작업중));
+                .and(nominee.contract.status.in(ContractStatus.NOT_STARTED, ContractStatus.IN_PROGRESS));
 
         if (serviceName != null) builder.and(contract.cleaning.serviceName.eq(serviceName));
 

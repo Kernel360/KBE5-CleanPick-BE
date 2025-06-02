@@ -94,7 +94,7 @@ public class ContractServiceImpl implements ContractService {
 
     // Contract 저장
     public Contract saveContract(ContractRequestDto dto, Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
-        dto.setStatus(ContractStatus.작업전);
+        dto.setStatus(ContractStatus.NOT_STARTED);
         return contractRepository.save(dto.toEntity(customer, manager, cleaning, routineContract));
     }
 
@@ -172,7 +172,7 @@ public class ContractServiceImpl implements ContractService {
 
         // 5. 각 날짜마다 Contract, ContractDetail, ContractOption 저장
         for (LocalDateTime date : contractDates) {
-            routinecontractDto.setStatus(ContractStatus.작업전);
+            routinecontractDto.setStatus(ContractStatus.NOT_STARTED);
             routinecontractDto.setContractDate(date);
 
             // contract - 예약 정보 저장

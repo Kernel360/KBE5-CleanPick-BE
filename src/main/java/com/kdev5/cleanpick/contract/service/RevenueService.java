@@ -45,7 +45,7 @@ public class RevenueService {
 
         Integer sum = contractRepository.sumMonthlyTotalPriceByManager(
                 findMember(userId),
-                List.of(ContractStatus.작업후, ContractStatus.정산전, ContractStatus.정산완료),
+                List.of(ContractStatus.COMPLETED, ContractStatus.AWATING_PAYMENT, ContractStatus.PAID),
                 yearMonth.atDay(1).atStartOfDay(),
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
@@ -59,7 +59,7 @@ public class RevenueService {
 
         List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
                 findMember(userId),
-                List.of(ContractStatus.작업후, ContractStatus.정산전, ContractStatus.정산완료),
+                List.of(ContractStatus.COMPLETED, ContractStatus.AWATING_PAYMENT, ContractStatus.PAID),
                 yearMonth.atDay(1).atStartOfDay(),
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );
@@ -87,7 +87,7 @@ public class RevenueService {
 
         List<Contract> contracts = contractRepository.findContractsByManagerAndStatusWithinDateRange(
                 findMember(userId),
-                List.of(ContractStatus.작업전, ContractStatus.작업중),
+                List.of(ContractStatus.NOT_STARTED, ContractStatus.IN_PROGRESS),
                 yearMonth.atDay(1).atStartOfDay(),
                 yearMonth.atEndOfMonth().atTime(LocalTime.MAX)
         );

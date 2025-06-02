@@ -43,10 +43,10 @@ public class ContractRepositoryImpl implements ContractRepositoryCustom {
         if (ContractFilterStatus.WAITING_MATCH.equals(filter)) {
             predicate.and(contract.manager.isNull());
         } else if (ContractFilterStatus.MATCHED.equals(filter)) {
-            predicate.and(contract.status.in(ContractStatus.작업전, ContractStatus.작업중))
+            predicate.and(contract.status.in(ContractStatus.NOT_STARTED, ContractStatus.IN_PROGRESS))
                     .and(contract.manager.isNotNull());
         } else if (ContractFilterStatus.COMPLETED.equals(filter)) {
-            predicate.and(contract.status.in(ContractStatus.작업후, ContractStatus.정산전, ContractStatus.정산완료))
+            predicate.and(contract.status.in(ContractStatus.COMPLETED, ContractStatus.AWATING_PAYMENT, ContractStatus.PAID))
                     .and(contract.manager.isNotNull());
         }
 
