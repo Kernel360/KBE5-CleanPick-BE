@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.manager.domain;
 
+import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,13 +9,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.Fetch;
-
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "manager")
+@Table(name = "manager", indexes = @Index(name = "idx_location", columnList = "location"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Manager extends BaseTimeEntity {
 
@@ -30,6 +31,12 @@ public class Manager extends BaseTimeEntity {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private Double longitude;
+
+    @Column(nullable = false)
+    private Double latitude;
+
     @Column(name = "phone_number", length = 50, nullable = false)
     private String phoneNumber;
 
@@ -39,6 +46,12 @@ public class Manager extends BaseTimeEntity {
     @Column(name = "profile_message")
     private String profileMessage;
 
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ManagerAvailableTime> availableTimes;
+
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ManagerAvailableCleaning> availableCleanings;
+
     @Builder
     public Manager(User user, String name, String phoneNumber, String profileImageUrl, String profileMessage) {
         this.user = user;
@@ -46,6 +59,26 @@ public class Manager extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.profileImageUrl = profileImageUrl;
         this.profileMessage = profileMessage;
+    }
+
+    public boolean isAvailableIn(LocalDateTime start, LocalDateTime end) {
+        DayOfWeek day = start.getDayOfWeek();
+        LocalTime startTime = start.toLocalTime();
+        LocalTime endTime = end.toLocalTime();
+
+        return availableTimes.stream()
+                .filter(t -> t.getDayOfWeek() == day)
+                .anyMatch(t -> !startTime.isBefore(t.getStartTime()) && !endTime.isAfter(t.getEndTime()));
+    }
+
+    public boolean supports(Cleaning cleaning) {
+        Boolean b = availableCleanings.stream()
+                .anyMatch(ac -> ac.getCleaning().equals(cleaning));
+        System.out.println(id + " " + cleaning.getServiceName() + " " + b);
+        for (ManagerAvailableCleaning ac : availableCleanings) {
+            System.out.println(ac.getCleaning().getServiceName());
+        }
+        return b;
     }
 }
 

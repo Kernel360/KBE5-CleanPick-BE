@@ -13,12 +13,12 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
+import com.kdev5.cleanpick.contract.domain.exception.ContractException;
+import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
 import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
-import com.kdev5.cleanpick.contract.domain.exception.ContractException;
-import com.kdev5.cleanpick.contract.infra.*;
 import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
@@ -53,11 +53,14 @@ public class ContractServiceImpl implements ContractService {
     private final ManagerRepository managerRepository;
     private final CleaningRepository cleaningRepository;
     private final CleaningOptionRepository cleaningOptionRepository;
+
     private final ManagerAvailableTimeRepository managerAvailableTimeRepository;
 
 
     // TODO 로그인 연결
     private final Long userId = 1L;
+
+    private final ContractMatchingService contractMatchingService;
 
     // Entity 조회
     public Customer findCustomer(Long customerId) {
@@ -126,7 +129,7 @@ public class ContractServiceImpl implements ContractService {
     // 1회성 청소 요청글 작성
     @Transactional
     @Override
-    public OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto){
+    public OneContractResponseDto createOneContract(@Valid ContractRequestDto contractDto) {
         Customer customer = findCustomer(contractDto.getCustomerId());
         Manager manager = findManagerIfPresent(contractDto.getManagerId());
         RoutineContract routineContract = findRoutineContractIfPresent(contractDto.getRoutineContractId());
@@ -141,6 +144,9 @@ public class ContractServiceImpl implements ContractService {
         // contract_option - 청소 요구사항 정보 저장
         List<Long> cleaningOptions = saveContractOptions(contractDto, newContract);
 
+        //TODO: 위경도 받아오기
+        contractMatchingService.requestCleaning(newContract.getId(), 37.495435686811, 127.02915553846, LocalDateTime.now(), LocalDateTime.now().plusHours(3));
+
         return OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
     }
 
@@ -148,7 +154,7 @@ public class ContractServiceImpl implements ContractService {
     // 정기 청소 요청글 작성
     @Transactional
     @Override
-    public RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto routinecontractDto){
+    public RoutineContractResponseDto createRoutineContract(@Valid ContractRequestDto routinecontractDto) {
 
         List<OneContractResponseDto> contractResponseDtoList = new ArrayList<>();
 
@@ -186,6 +192,8 @@ public class ContractServiceImpl implements ContractService {
 
             contractResponseDtoList.add(OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
         }
+
+        //TODO: 매칭 알고리즘..
 
         return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
     }
@@ -229,7 +237,7 @@ public class ContractServiceImpl implements ContractService {
         ContractDetail contractDetail = findContractDetail(contractId);
 
         // 매니저 매칭 안된 계약이면 바로 수정, 매칭된 계약인 경우 일정 확인 후 수정 (일정 겹친다 알림떠서 매칭 취소할지말지 하는 팝업이 떠야할 수도 있을거 같음)
-        if ( contract.getManager() == null ) contract.updateDate(contractDto.getContractDate());
+        if (contract.getManager() == null) contract.updateDate(contractDto.getContractDate());
         else {
             Manager manager = findManagerIfPresent(contract.getManager().getId());
             // 매니저의 기존 일정과 안 겹치는지 + 매니저 가능 시간인지 확인 필요
@@ -259,7 +267,7 @@ public class ContractServiceImpl implements ContractService {
 
         contract.softDelete();
         contractDetail.softDelete();
-        for ( ContractOption contractOption : contractOptionList ) {
+        for (ContractOption contractOption : contractOptionList) {
             contractOption.softDelete();
         }
 
