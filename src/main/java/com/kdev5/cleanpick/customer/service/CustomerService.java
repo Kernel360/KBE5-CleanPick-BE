@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kdev5.cleanpick.customer.domain.Customer;
+import com.kdev5.cleanpick.customer.domain.exception.CustomerNotFoundException;
 import com.kdev5.cleanpick.customer.infra.repository.CustomerRepository;
 import com.kdev5.cleanpick.customer.service.dto.request.WriteCustomerRequestDto;
 import com.kdev5.cleanpick.customer.service.dto.response.CustomerPrivateResponseDto;
@@ -32,6 +33,30 @@ public class CustomerService {
 
 		final Customer customer = customerRepository.save(writeCustomerRequestDto.toEntity(user));
 
+		return CustomerPrivateResponseDto.fromEntity(customer);
+	}
+
+	@Transactional
+	public CustomerPrivateResponseDto editCustomer(Long customerId, WriteCustomerRequestDto writeCustomerRequestDto) {
+
+		final Customer customer = customerRepository.findById(customerId).orElseThrow(
+			() -> new CustomerNotFoundException(ErrorCode.USER_NOT_FOUND));
+
+		customer.changeProfile(
+			writeCustomerRequestDto.getName(),
+			writeCustomerRequestDto.getPhoneNumber(),
+			writeCustomerRequestDto.getMainAddress(),
+			writeCustomerRequestDto.getSubAddress(),
+			writeCustomerRequestDto.getProfileImageUrl()
+		);
+
+		return CustomerPrivateResponseDto.fromEntity(customer);
+	}
+
+	public CustomerPrivateResponseDto getCustomer(Long customerId) {
+		final Customer customer = customerRepository.findById(customerId).orElseThrow(
+			() -> new CustomerNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND)
+		);
 		return CustomerPrivateResponseDto.fromEntity(customer);
 	}
 

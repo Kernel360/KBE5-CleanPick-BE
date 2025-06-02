@@ -38,16 +38,32 @@ public class Customer extends BaseTimeEntity {
     @Column(name = "profile_image_url", length = 2048)
     private String profileImageUrl;
 
+    private Double latitude;
 
-    @Builder
-    public Customer(Long id, String name, String phoneNumber, String mainAddress, String subAddress,  String profileImageUrl, User user) {
+    private Double longitude;
+
+    public Customer(Long id, User user, String name, String phoneNumber, String mainAddress, String subAddress,
+        String profileImageUrl, Double latitude, Double longitude) {
         this.id = id;
+        this.user = user;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.mainAddress = mainAddress;
         this.subAddress = subAddress;
         this.profileImageUrl = profileImageUrl;
-        this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    @Builder
+
+
+    public void changeProfile(String name, String phoneNumber, String mainAddress, String subAddress, String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+        this.mainAddress = mainAddress;
+        this.subAddress = subAddress;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
     }
 
 }

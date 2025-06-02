@@ -1,8 +1,9 @@
 package com.kdev5.cleanpick.global.security.auth;
 
 import com.kdev5.cleanpick.user.domain.Role;
-import com.kdev5.cleanpick.user.domain.Status;
+import com.kdev5.cleanpick.user.domain.UserStatus;
 import com.kdev5.cleanpick.user.domain.User;
+
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private final String email;
     private final String password;
     private final Role role;
-    private final Status status;
+    private final UserStatus userStatus;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -37,15 +38,15 @@ public class CustomUserDetails implements UserDetails {
         return email;
     }
 
-    public CustomUserDetails(Long id, String email, String password, Role role, Status status) {
+    public CustomUserDetails(Long id, String email, String password, Role role, UserStatus userStatus) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.status = status;
+        this.userStatus = userStatus;
     }
 
     public static CustomUserDetails fromEntity(User user){
-        return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole(), user.getStatus());
+        return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole(), user.getUserStatus());
     }
 }
