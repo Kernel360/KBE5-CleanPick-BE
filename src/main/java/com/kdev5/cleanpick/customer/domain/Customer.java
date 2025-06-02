@@ -56,15 +56,15 @@ public class Customer extends BaseTimeEntity {
         this.longitude = longitude;
     }
 
-    @Builder
-
-
-    public void changeProfile(String name, String phoneNumber, String mainAddress, String subAddress, String profileImageUrl) {
+    public void changeProfile(String name, String phoneNumber, String mainAddress, String subAddress, String profileImageUrl,
+            Double latitude, Double longitude) {
         this.profileImageUrl = profileImageUrl;
         this.mainAddress = mainAddress;
         this.subAddress = subAddress;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 }

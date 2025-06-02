@@ -47,7 +47,9 @@ public class CustomerService {
 			writeCustomerRequestDto.getPhoneNumber(),
 			writeCustomerRequestDto.getMainAddress(),
 			writeCustomerRequestDto.getSubAddress(),
-			writeCustomerRequestDto.getProfileImageUrl()
+			writeCustomerRequestDto.getProfileImageUrl(),
+			writeCustomerRequestDto.getLatitude(),
+			writeCustomerRequestDto.getLongitude()
 		);
 
 		return CustomerPrivateResponseDto.fromEntity(customer);

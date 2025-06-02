@@ -4,6 +4,7 @@ import com.kdev5.cleanpick.customer.domain.Customer;
 import com.kdev5.cleanpick.user.domain.User;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
@@ -23,6 +24,12 @@ public class WriteCustomerRequestDto {
 
 	private String profileImageUrl;
 
+	@NotNull
+	private Double latitude;
+
+	@NotNull
+	private Double longitude;
+
 	public Customer toEntity(User user) {
 		return Customer.builder()
 			.user(user)
@@ -31,6 +38,8 @@ public class WriteCustomerRequestDto {
 			.mainAddress(mainAddress)
 			.subAddress(subAddress)
 			.profileImageUrl(profileImageUrl)
+			.latitude(latitude)
+			.longitude(longitude)
 			.build();
 	}
 }
