@@ -4,6 +4,7 @@ import com.kdev5.cleanpick.converter.DayOfWeekListConverter;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 
 import java.time.DayOfWeek;
@@ -14,6 +15,7 @@ import java.util.List;
 @Table(name = "routine_contract")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Where(clause = "deleted_at IS NULL")
 public class RoutineContract extends BaseTimeEntity {
 
     @Id

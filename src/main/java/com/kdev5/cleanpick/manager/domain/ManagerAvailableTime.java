@@ -2,11 +2,13 @@ package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Entity
+@Getter
 @Table(name = "manager_available_time")
 public class ManagerAvailableTime extends BaseTimeEntity {
     @Id
