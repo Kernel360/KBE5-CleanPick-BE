@@ -72,13 +72,9 @@ public class Manager extends BaseTimeEntity {
     }
 
     public boolean supports(Cleaning cleaning) {
-        Boolean b = availableCleanings.stream()
+
+        return availableCleanings.stream()
                 .anyMatch(ac -> ac.getCleaning().equals(cleaning));
-        System.out.println(id + " " + cleaning.getServiceName() + " " + b);
-        for (ManagerAvailableCleaning ac : availableCleanings) {
-            System.out.println(ac.getCleaning().getServiceName());
-        }
-        return b;
     }
 }
 

@@ -7,14 +7,13 @@ import com.kdev5.cleanpick.contract.domain.exception.ContractException;
 import com.kdev5.cleanpick.contract.domain.exception.ContractNotFoundException;
 import com.kdev5.cleanpick.contract.domain.exception.NomineeException;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
+import com.kdev5.cleanpick.contract.infra.NomineeBulkRepository;
 import com.kdev5.cleanpick.contract.infra.NomineeRepository;
 import com.kdev5.cleanpick.contract.service.support.IntervalTree;
 import com.kdev5.cleanpick.contract.service.support.TimeInterval;
 import com.kdev5.cleanpick.global.exception.ErrorCode;
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.domain.exception.ManagerNotFoundException;
-import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableCleaningRepository;
-import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableTimeRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContractMatchingService {
     private final NomineeRepository nomineeRepository;
+    private final NomineeBulkRepository nomineeBulkRepository;
     private final ContractRepository contractRepository;
     private final ManagerRepository managerRepository;
     private final IntervalTree intervalTree;
-
-    private final ManagerAvailableTimeRepository managerAvailableTimeRepository;
-    private final ManagerAvailableCleaningRepository managerAvailableCleaningRepository;
 
     private static final int DEFAULT_SEARCH_RADIUS_METERS = 20000;
 
@@ -81,30 +78,24 @@ public class ContractMatchingService {
 
     //매칭 알고리즘
     @Transactional
-    public List<Long> requestCleaning(Long contractId, double lat, double lon, LocalDateTime start, LocalDateTime end) {
+    public void requestCleaning(Long contractId, double lat, double lon, LocalDateTime start, LocalDateTime end) {
 
         //--------------------------1차 필터링
         List<Manager> distanceFiltered = filterManagersByDistanceAndSchedule(lat, lon, start, end);
 
-        Contract contract = contractRepository.findById(contractId).orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
-
         //--- ----------------------2차 필터링
+        Contract contract = contractRepository.findById(contractId).orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
         List<Manager> finalFiltered = distanceFiltered.stream()
                 .filter(m -> m.isAvailableIn(start, end))
                 .filter(m -> m.supports(contract.getCleaning()))
                 .toList();
 
-        List<Long> dd = finalFiltered.stream()
-                .map(Manager::getId)
-                .collect(Collectors.toList());
 
+        List<Nominee> nominees = finalFiltered.stream().map(m -> Nominee.builder().contract(contract).manager(m).build()).collect(Collectors.toList());
+        nomineeBulkRepository.saveAll(nominees);
 
-        //nominee 추가
-
-        //알림
         //TODO: 알림 로직
 
-        return dd;
     }
 
     public List<Manager> filterManagersByDistanceAndSchedule(double lat, double lon, LocalDateTime start, LocalDateTime end) {
