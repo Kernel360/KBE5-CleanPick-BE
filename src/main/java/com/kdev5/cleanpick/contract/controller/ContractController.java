@@ -37,16 +37,15 @@ public class ContractController {
     private final ReadContractService readContractService;
     private final ContractService contractService;
 
-    // 1. 청소 요청 글 작성
-    // 1-1. 1회성 청소
     @PostMapping("/one")
+    @Operation(summary = "[수요자]1회성 청소 요청글 작성", description = "1회성 청소 요청글을 작성합니다.")
     public ResponseEntity<ApiResponse<OneContractResponseDto>> createContract(@RequestBody @Valid ContractRequestDto contractDto) {
         OneContractResponseDto newContract = contractService.createOneContract(contractDto);
         return ResponseEntity.ok(ApiResponse.ok(newContract));
     }
 
-    // 1-2. 정기 청소
     @PostMapping("/routine")
+    @Operation(summary = "[수요자]정기 청소 요청글 작성", description = "시작 날짜와 횟수를 통해 동일한 1회성 요청글을 반복해서 작성합니다.")
     public ResponseEntity<ApiResponse<RoutineContractResponseDto>> createRoutineContract(@RequestBody @Valid ContractRequestDto contractDto) {
         RoutineContractResponseDto newContracts = contractService.createRoutineContract(contractDto);
         return ResponseEntity.ok(ApiResponse.ok(newContracts));
@@ -71,6 +70,20 @@ public class ContractController {
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readCustomerContracts(userId, role, status, pageable))));
     }
 
+    @PutMapping("/{contractId}")
+    @Operation(summary = "[수요자] 요청글 내용 수정", description = "반려동물, 요청사항, 예약날짜를 변경할 수 있습니다. 매칭되어있는 매니저가 존재하는 경우, 매니저의 일정을 확인 한 후 수정에 반영합니다.")
+    public ResponseEntity<ApiResponse<Void>> changeContract(@RequestBody @Valid UpdateContractRequestDto dto, @PathVariable("contractId") Long contractId) {
+        contractService.updateOneContract(dto, contractId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @DeleteMapping("/{contractId}")
+    @Operation(summary = "[수요자] 요청글 삭제", description = "요청글을 삭제합니다.")
+    public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable("contractId") Long contractId) {
+        contractService.deleteOneContract(contractId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
     @GetMapping("/manager/completed")
     @Operation(summary = "[매니저] 예약 목록 조회", description = "매니저가 완료한 예약 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<PageResponse<ReadConfirmedMatchingResponseDto>>> readManagerCompletedContracts(
@@ -82,20 +95,6 @@ public class ContractController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortType));
 
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readContractService.readManagerCompletedContracts(userId, role, pageable))));
-    }
-
-    // Contract 수정
-    @PutMapping("/{contractId}")
-    public ResponseEntity<ApiResponse<Void>> changeContract(@RequestBody @Valid UpdateContractRequestDto dto, @PathVariable("contractId") Long contractId) {
-        contractService.updateOneContract(dto, contractId);
-        return ResponseEntity.ok(ApiResponse.ok(null));
-    }
-
-    //Contract 삭제
-    @DeleteMapping("/{contractId}")
-    public ResponseEntity<ApiResponse<Void>> deleteContract(@PathVariable("contractId") Long contractId) {
-        contractService.deleteOneContract(contractId);
-        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     @GetMapping("/pending")
