@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/matching")
-@Tag(name = "matching API", description = "매칭 상태를 변경하는(수락/거절) 컨트롤러")
+@Tag(name = "matching API", description = "매칭을 관리하는 컨트롤러")
 public class MatchingController {
     private final ContractMatchingService contractMatchingService;
 

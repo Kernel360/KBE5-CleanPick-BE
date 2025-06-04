@@ -13,6 +13,7 @@ import com.kdev5.cleanpick.contract.domain.ContractDetail;
 import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.exception.ContractException;
+import com.kdev5.cleanpick.contract.event.MatchingRequestEvent;
 import com.kdev5.cleanpick.contract.infra.ContractDetailRepository;
 import com.kdev5.cleanpick.contract.infra.ContractOptionRepository;
 import com.kdev5.cleanpick.contract.infra.ContractRepository;
@@ -34,6 +35,7 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -61,7 +63,7 @@ public class ContractServiceImpl implements ContractService {
     // TODO 로그인 연결
     private final Long userId = 2L;
 
-    private final ContractMatchingService contractMatchingService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     // Entity 조회
     public Customer findCustomer(Long customerId) {
@@ -142,8 +144,13 @@ public class ContractServiceImpl implements ContractService {
         // contract_option - 청소 요구사항 정보 저장
         List<Long> cleaningOptions = saveContractOptions(contractDto, newContract);
 
-        contractMatchingService.requestCleaning(newContract.getId(), contractDto.getLatitude(), contractDto.getLongitude(), contractDto.getContractDate(), contractDto.getContractDate().plusHours(contractDto.getTotalTime()));
-
+        applicationEventPublisher.publishEvent(
+                MatchingRequestEvent.forSingle(newContract.getId(),
+                        contractDto.getLatitude(),
+                        contractDto.getLongitude(),
+                        contractDto.getContractDate(),
+                        contractDto.getContractDate().plusHours(contractDto.getTotalTime()))
+        );
         return OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, null);
     }
 
@@ -188,7 +195,9 @@ public class ContractServiceImpl implements ContractService {
             contractResponseDtoList.add(OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
         }
 
-        contractMatchingService.requestRoutineCleaning(newRoutineContract.getId(), routinecontractDto.getLatitude(), routinecontractDto.getLongitude(), contractDates);
+        applicationEventPublisher.publishEvent(
+                MatchingRequestEvent.forRoutine(newRoutineContract.getId(), routinecontractDto.getLatitude(), routinecontractDto.getLongitude(), contractDates)
+        );
 
         return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
     }
