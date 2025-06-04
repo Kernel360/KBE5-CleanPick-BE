@@ -1,14 +1,9 @@
 package com.kdev5.cleanpick.user.service.dto.request;
 
-import com.kdev5.cleanpick.user.domain.LoginType;
-import com.kdev5.cleanpick.user.domain.Role;
-import com.kdev5.cleanpick.user.domain.Status;
-import com.kdev5.cleanpick.user.domain.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 public final class SignUpRequestDto {

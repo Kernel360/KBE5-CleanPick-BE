@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
+public enum UserStatus {
 	PENDING("대기"), ACTIVE("활성");
 
 	private final String value;

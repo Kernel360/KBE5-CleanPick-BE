@@ -1,6 +1,6 @@
 package com.kdev5.cleanpick.user.service.dto.response;
 
-import com.kdev5.cleanpick.user.domain.Status;
+import com.kdev5.cleanpick.user.domain.UserStatus;
 import com.kdev5.cleanpick.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +13,10 @@ public class UserResponseDto {
 
     private final String email;
 
-    private final Status status;
+    private final UserStatus userStatus;
 
     public static UserResponseDto fromEntity(User user) {
 
-        return new UserResponseDto(user.getId(), user.getEmail(), user.getStatus());
+        return new UserResponseDto(user.getId(), user.getEmail(), user.getUserStatus());
     }
 }
