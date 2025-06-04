@@ -90,7 +90,6 @@ public class ContractMatchingService {
                 .filter(m -> m.supports(contract.getCleaning()))
                 .toList();
 
-
         List<Nominee> nominees = finalFiltered.stream().map(m -> Nominee.builder().contract(contract).manager(m).build()).collect(Collectors.toList());
         nomineeBulkRepository.saveAll(nominees);
 

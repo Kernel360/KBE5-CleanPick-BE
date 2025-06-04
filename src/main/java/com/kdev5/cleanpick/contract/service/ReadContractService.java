@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class ReadContractService {
     private final ContractOptionRepository contractOptionRepository;
 
 
+    @Transactional(readOnly = true)
     public ReadContractDetailResponseDto readContractDetail(Long contractId) {
         ContractDetail contractDetail = contractDetailRepository.findByContractId(contractId).orElseThrow(() -> new ContractException(ErrorCode.CONTRACT_NOT_FOUND));
         List<ReadContractOptionResponseDto> options = contractOptionRepository.findAllByContractId(contractId).stream()
@@ -40,12 +42,14 @@ public class ReadContractService {
         return ReadContractDetailResponseDto.fromEntity(contractDetail, options);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReadContractResponseDto> readCustomerContracts(Long userId, String role, ContractFilterStatus status, Pageable pageable) {
         Page<Contract> contracts = contractRepository.findByFilter(userId, role, status, pageable);
         return contracts.map(ReadContractResponseDto::fromEntity);
 
     }
 
+    @Transactional(readOnly = true)
     public Page<ReadConfirmedMatchingResponseDto> readManagerCompletedContracts(Long userId, String role, Pageable pageable) {
         Page<Contract> contracts = contractRepository.findByFilter(userId, role, ContractFilterStatus.COMPLETED, pageable);
         return contracts.map(ReadConfirmedMatchingResponseDto::fromEntity);

@@ -1,16 +1,13 @@
 package com.kdev5.cleanpick.contract.controller;
 
 
-import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
-import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
-import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.contract.service.ReadContractService;
 import com.kdev5.cleanpick.contract.service.ReadNomineeService;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.response.*;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
@@ -53,6 +50,7 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}")
+    @Operation(summary = "예약 상세 조회", description = "예약 상세 정보를 확인합니다.")
     public ResponseEntity<ApiResponse<ReadContractDetailResponseDto>> readDetailContract(@PathVariable("contractId") Long contractId) {
         return ResponseEntity.ok(ApiResponse.ok(readContractService.readContractDetail(contractId)));
     }

@@ -19,11 +19,14 @@ public class OneContractResponseDto {
     private Long managerId;
     private Long cleaningId;
     private LocalDateTime contractDate;
-    private String address;
     private int totalPrice;
     private int totalTime;
     private boolean personal;
     private ContractStatus status;
+    private String address;
+    private String subAddress;
+    private Double longitude;
+    private Double latitude;
 
     // ContractDetail
     private LocalDateTime checkIn;
@@ -35,14 +38,13 @@ public class OneContractResponseDto {
     // ContractOption
     private List<Long> cleaningOptionList;
 
-    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, ContractStatus status, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, List<Long> cleaningOptionList) {
+    public OneContractResponseDto(Long contractId, Long routineContractId, Long customerId, Long managerId, Long cleaningId, LocalDateTime contractDate, int totalPrice, int totalTime, boolean personal, ContractStatus status, LocalDateTime checkIn, LocalDateTime checkOut, String housingType, String pet, String request, List<Long> cleaningOptionList, Double longitude, Double latitude, String address, String subAddress) {
         this.contractId = contractId;
         this.routineContractId = routineContractId;
         this.customerId = customerId;
         this.managerId = managerId;
         this.cleaningId = cleaningId;
         this.contractDate = contractDate;
-        this.address = address;
         this.totalPrice = totalPrice;
         this.totalTime = totalTime;
         this.personal = personal;
@@ -53,6 +55,10 @@ public class OneContractResponseDto {
         this.pet = pet;
         this.request = request;
         this.cleaningOptionList = cleaningOptionList;
+        this.address = address;
+        this.subAddress = subAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
 
@@ -69,7 +75,6 @@ public class OneContractResponseDto {
                 contract.getManager() != null ? contract.getManager().getId() : null,
                 contract.getCleaning().getId(),
                 contract.getContractDate(),
-                contract.getAddress(),
                 contract.getTotalPrice(),
                 contract.getTotalTime(),
                 contract.isPersonal(),
@@ -79,7 +84,11 @@ public class OneContractResponseDto {
                 contractDetail.getHousingType(),
                 contractDetail.getPet(),
                 contractDetail.getRequest(),
-                cleaningOptionIds
+                cleaningOptionIds,
+                contract.getLongitude(),
+                contract.getLatitude(),
+                contract.getAddress(),
+                contract.getSubAddress()
         );
 
     }

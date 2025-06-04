@@ -1,6 +1,5 @@
 package com.kdev5.cleanpick.contract.service.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.cleaning.domain.CleaningOption;
 import com.kdev5.cleanpick.contract.domain.Contract;
@@ -9,7 +8,6 @@ import com.kdev5.cleanpick.contract.domain.ContractOption;
 import com.kdev5.cleanpick.contract.domain.RoutineContract;
 import com.kdev5.cleanpick.contract.domain.enumeration.ContractStatus;
 import com.kdev5.cleanpick.customer.domain.Customer;
-import com.kdev5.cleanpick.manager.domain.Manager;
 import lombok.Getter;
 
 import java.time.DayOfWeek;
@@ -22,17 +20,18 @@ public class ContractRequestDto {
     //contract, contract_detail, contract_option, routine_contract
     //계약 정보, 계약 상세 정보, 청소 요구사항, 정기 예약 정보
 
-    private Long customerId;
-
-    private Long managerId; // nullable
-
     private Long cleaningId;
-
-    private Long routineContractId; // nullable
 
     private LocalDateTime contractDate;
 
     private String address;
+
+    private String subAddress;
+
+    private Double longitude;
+
+    private Double latitude;
+
 
     private int totalPrice;
 
@@ -40,14 +39,7 @@ public class ContractRequestDto {
 
     private boolean personal;
 
-    private ContractStatus status;
-
     // contract_detail
-    private LocalDateTime checkIn;
-
-    private LocalDateTime checkOut;
-
-    private Long contractId;
 
     private String housingType;
 
@@ -73,17 +65,19 @@ public class ContractRequestDto {
     private List<DayOfWeek> dayOfWeek; // JSON 문자열 (예: ["MON", "WED", "FRI"])
 
 
-    public Contract toEntity(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract) {
+    public Contract toEntity(Customer customer, Cleaning cleaning, RoutineContract routineContract) {
         return Contract.builder()
                 .customer(customer)
-                .manager(manager)
                 .cleaning(cleaning)
                 .routineContract(routineContract)
                 .contractDate(contractDate)
+                .longitude(longitude)
+                .latitude(latitude)
                 .address(address)
+                .subAddress(subAddress)
                 .totalPrice(totalPrice)
                 .totalTime(totalTime)
-                .status(status)
+                .status(ContractStatus.작업전)
                 .personal(personal)
                 .build();
     }
@@ -91,8 +85,6 @@ public class ContractRequestDto {
     public ContractDetail toEntity(Contract contract) {
         return ContractDetail.builder()
                 .contract(contract)
-                .checkIn(checkIn)
-                .checkOut(checkOut)
                 .pet(pet)
                 .request(request)
                 .housingType(housingType)
@@ -106,7 +98,7 @@ public class ContractRequestDto {
                 .build();
     }
 
-    public RoutineContract toEntity(){
+    public RoutineContract toEntity() {
         return RoutineContract.builder()
                 .discountRate(discountRate)
                 .contractStartDate(contractStartDate)
@@ -115,11 +107,6 @@ public class ContractRequestDto {
                 .time(time)
                 .dayOfWeek(dayOfWeek)
                 .build();
-    }
-
-
-    public void setStatus(ContractStatus status) {
-        this.status = status;
     }
 
     public void setContractDate(LocalDateTime contractDate) {
