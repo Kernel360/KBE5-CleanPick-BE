@@ -11,11 +11,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "device")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Device extends BaseTimeEntity {
 
 	@Id
@@ -37,4 +40,19 @@ public class Device extends BaseTimeEntity {
 	@Column(nullable = false)
 	private Boolean isActive = true;
 
+	@Builder
+	public Device(Long userId, String deviceToken, String deviceType, LocalDateTime lastLoggedInAt, Boolean isActive) {
+		this.userId = userId;
+		this.deviceToken = deviceToken;
+		this.deviceType = deviceType;
+		this.lastLoggedInAt = lastLoggedInAt;
+		this.isActive = isActive;
+	}
+
+	public void renewDeviceInfo(Long userId, String deviceType) {
+		this.userId = userId;
+		this.deviceType = deviceType;
+		this.lastLoggedInAt = LocalDateTime.now();
+		this.isActive = true;
+	}
 }
