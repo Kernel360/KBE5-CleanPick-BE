@@ -1,19 +1,18 @@
 package com.kdev5.cleanpick.contract.controller;
 
 
-import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
-import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
-import com.kdev5.cleanpick.contract.service.dto.response.OneContractResponseDto;
-import com.kdev5.cleanpick.contract.service.dto.response.RoutineContractResponseDto;
 import com.kdev5.cleanpick.cleaning.domain.enumeration.ServiceName;
 import com.kdev5.cleanpick.contract.service.ContractService;
 import com.kdev5.cleanpick.contract.service.ReadContractService;
 import com.kdev5.cleanpick.contract.service.ReadNomineeService;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractFilterStatus;
 import com.kdev5.cleanpick.contract.service.dto.request.ContractRequestDto;
+import com.kdev5.cleanpick.contract.service.dto.request.UpdateContractRequestDto;
 import com.kdev5.cleanpick.contract.service.dto.response.*;
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
+import com.kdev5.cleanpick.manager.service.dto.response.ReadManagerResponseDto;
+import com.querydsl.core.types.Order;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -53,11 +52,12 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}")
+    @Operation(summary = "예약 상세 조회", description = "예약 상세 내용을 조회합니다.")
     public ResponseEntity<ApiResponse<ReadContractDetailResponseDto>> readDetailContract(@PathVariable("contractId") Long contractId) {
         return ResponseEntity.ok(ApiResponse.ok(readContractService.readContractDetail(contractId)));
     }
 
-    @GetMapping("/user")
+    @GetMapping("/customer")
     @Operation(summary = "[수요자]예약 목록 조회", description = "수요자가 신청한 예약 목록을 조회합니다. 매칭 전, 작업 전(중)/후로 나누어 확인 가능합니다. ")
     public ResponseEntity<ApiResponse<PageResponse<ReadContractResponseDto>>> readCustomerContracts(
             @RequestParam("status") ContractFilterStatus status,
@@ -72,7 +72,7 @@ public class ContractController {
     }
 
     @GetMapping("/manager/completed")
-    @Operation(summary = "[매니저] 예약 목록 조회", description = "매니저가 완료한 예약 목록을 조회합니다.")
+    @Operation(summary = "[매니저] 완료 예약 목록 조회", description = "매니저가 완료한 예약 목록을 조회합니다.")
     public ResponseEntity<ApiResponse<PageResponse<ReadConfirmedMatchingResponseDto>>> readManagerCompletedContracts(
             @RequestParam("sortType") String sortType,
             @RequestParam("order") String order,
@@ -99,7 +99,7 @@ public class ContractController {
     }
 
     @GetMapping("/pending")
-    @Operation(summary = "매니저에게 들어온 요청 목록 조회", description = "매니저에게 들어온 모든 요청을 조회합니다.")
+    @Operation(summary = "매니저에게 들어온 요청 목록 조회", description = "매니저에게 들어온 모든 요청을 조회합니다. 이 목록을 통해 매니저는 신청 또는 거절을 합니다.")
     public ResponseEntity<ApiResponse<PageResponse<ReadRequestedMatchingResponseDto>>> readRequestedMatching(
             @RequestParam(value = "isPersonal", required = false) Boolean isPersonal,
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -128,6 +128,18 @@ public class ContractController {
 
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readConfirmedMatching(userId, serviceType, sortType, PageRequest.of(page, size)))));
     }
+
+    @GetMapping("/{contractId}/accepted")
+    @Operation(summary = "매칭 후보 매니저들", description = "accept한 매니저 목록을 조회합니다. 정렬 기준은 최근 accept된 순(asc, desc)입니다. 수요자는 이 목록에서 한 명을 골라 최종 매칭을 합니다.")
+    public ResponseEntity<ApiResponse<PageResponse<ReadManagerResponseDto>>> readAcceptedNominee(
+            @PathVariable("contractId") Long contractId,
+            @RequestParam("order") Order order,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(readNomineeService.readAcceptedNominee(contractId, order, PageRequest.of(page, size)))));
+    }
+
 }
 
 

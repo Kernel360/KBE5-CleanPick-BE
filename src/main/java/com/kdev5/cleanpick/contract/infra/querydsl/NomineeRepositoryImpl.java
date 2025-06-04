@@ -65,19 +65,42 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
         return fetchNomineesWithPaging(builder, pageable, getOrderSpecifier(sortType));
     }
 
-    private OrderSpecifier<LocalDateTime> getOrderSpecifier(String sortType) {
-        Order order = Order.DESC;
+    @Override
+    public Page<Long> findAcceptManagerIds(Long contractId, Order order, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder()
+                .and(nominee.contract.id.eq(contractId))
+                .and(nominee.status.eq(MatchingStatus.ACCEPT));
 
+        List<Long> content = fetchAcceptManagerIds(builder, pageable, getOrderSpecifier("updatedAt", order));
+        Long total = countNominees(builder);
+
+        return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    private OrderSpecifier<LocalDateTime> getOrderSpecifier(String sortType) {
         if ("contract".equalsIgnoreCase(sortType)) {
-            return new OrderSpecifier<>(order, contract.contractDate);
+            return new OrderSpecifier<>(Order.DESC, contract.contractDate);
         } else {
-            return new OrderSpecifier<>(order, nominee.updatedAt);
+            return new OrderSpecifier<>(Order.DESC, nominee.updatedAt);
         }
     }
 
+    private OrderSpecifier<?> getOrderSpecifier(String sortType, Order order) {
+        System.out.println(sortType + " " + order);
+        if ("contract".equalsIgnoreCase(sortType)) {
+            return new OrderSpecifier<>(Order.DESC, contract.contractDate);
+        } else if ("updatedAt".equalsIgnoreCase(sortType)) {
+            if (order.equals(Order.ASC)) return nominee.updatedAt.asc();
+            else return nominee.updatedAt.desc();
+
+        }
+
+        return nominee.id.asc();
+    }
+
+
     private Page<Nominee> fetchNomineesWithPaging(BooleanBuilder builder, Pageable pageable, OrderSpecifier<?> orderSpecifier) {
         List<Long> nomineeIds = fetchNomineeIds(builder, pageable, orderSpecifier);
-
         if (nomineeIds.isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -86,6 +109,18 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
         Long total = countNominees(builder);
 
         return new PageImpl<>(content, pageable, Optional.ofNullable(total).orElse(0L));
+    }
+
+    private List<Long> fetchAcceptManagerIds(BooleanBuilder builder, Pageable pageable, OrderSpecifier<?> orderSpecifier) {
+        return queryFactory
+                .select(nominee.manager.id)
+                .from(nominee)
+                .join(nominee.contract, contract)
+                .where(builder)
+                .orderBy(orderSpecifier)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
     }
 
     private List<Long> fetchNomineeIds(BooleanBuilder builder, Pageable pageable, OrderSpecifier<?> orderSpecifier) {
@@ -106,7 +141,7 @@ public class NomineeRepositoryImpl implements NomineeRepositoryCustom {
                 .join(nominee.contract, contract).fetchJoin()
                 .join(contract.cleaning, cleaning).fetchJoin()
                 .join(contract.customer, customer).fetchJoin()
-                .join(contract.manager, manager).fetchJoin()
+                .leftJoin(contract.manager, manager).fetchJoin()
                 .where(nominee.id.in(nomineeIds))
                 .orderBy(orderSpecifier)
                 .fetch();

@@ -1,7 +1,10 @@
 package com.kdev5.cleanpick.review.Infra.querydsl;
 
+import com.kdev5.cleanpick.manager.service.dto.response.ReadManagerResponseDto;
 import com.kdev5.cleanpick.review.domain.QReview;
+import com.kdev5.cleanpick.review.domain.enumeration.ReviewType;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -10,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.kdev5.cleanpick.manager.domain.QManager.manager;
+import static com.kdev5.cleanpick.review.domain.QReview.review;
 import static com.kdev5.cleanpick.review.domain.enumeration.ReviewType.TO_MANAGER;
 
 @Repository
@@ -61,4 +66,29 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 }
         ));
     }
+
+    @Override
+    public List<ReadManagerResponseDto> findManagerRatingsWithInfo(List<Long> managerIds) {
+        return queryFactory
+                .select(Projections.constructor(
+                        ReadManagerResponseDto.class,
+                        manager.id,
+                        manager.name,
+                        review.rating.avg(),
+                        review.id.count(),
+                        manager.profileImageUrl,
+                        manager.profileMessage
+
+                ))
+                .from(review)
+                .join(review.manager, manager)
+                .where(
+                        review.manager.id.in(managerIds),
+                        review.type.eq(ReviewType.TO_MANAGER)
+                )
+                .groupBy(manager.id, manager.name, manager.profileImageUrl)
+                .fetch();
+
+    }
+
 }

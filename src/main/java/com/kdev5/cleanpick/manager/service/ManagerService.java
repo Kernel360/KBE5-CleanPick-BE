@@ -6,6 +6,7 @@ import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableCleaningRepo
 import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableRegionRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerRepository;
 import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
+import com.kdev5.cleanpick.manager.service.dto.response.ReadManagerResponseDto;
 import com.kdev5.cleanpick.review.Infra.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -90,5 +91,8 @@ public class ManagerService {
         return others == 0 ? firstRegion : firstRegion + " 외 " + others + "곳";
     }
 
+    public List<ReadManagerResponseDto> readManagerInfos(List<Long> managerIds) {
+        return reviewRepository.findManagerRatingsWithInfo(managerIds);
+    }
 }
 
