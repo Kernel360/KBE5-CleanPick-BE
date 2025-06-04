@@ -1,8 +1,11 @@
 package com.kdev5.cleanpick.contract.service.support;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Getter
 public class TimeInterval implements Comparable<TimeInterval> {
     private LocalDateTime start;
     private LocalDateTime end;

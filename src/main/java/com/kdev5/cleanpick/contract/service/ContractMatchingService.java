@@ -97,6 +97,35 @@ public class ContractMatchingService {
 
     }
 
+    @Transactional
+    public void requestRoutineCleaning(Long contractId, double lat, double lon, List<LocalDateTime> contractDates) {
+
+        List<Manager> candidateManagers = findAvailableManagersByDistance(lat, lon);
+
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new ContractNotFoundException(ErrorCode.CONTRACT_NOT_FOUND));
+
+        List<TimeInterval> intervals = contractDates.stream()
+                .map(startDateTime -> new TimeInterval(startDateTime, startDateTime.plusHours(contract.getTotalTime())))
+                .toList();
+
+        List<Manager> finalFiltered = candidateManagers.stream()
+                .filter(manager -> intervals.stream().allMatch(interval ->
+                        intervalTree.isAvailable(manager.getId(), interval)
+                                && manager.isAvailableIn(interval.getStart(), interval.getEnd())))
+                .filter(manager -> manager.supports(contract.getCleaning())).toList();
+
+
+        List<Nominee> nominees = finalFiltered.stream()
+                .map(manager -> Nominee.builder().contract(contract).manager(manager).build())
+                .toList();
+
+        nomineeBulkRepository.saveAll(nominees);
+
+        // TODO: 알림 로직 추가
+    }
+
+
     public List<Manager> filterManagersByDistanceAndSchedule(double lat, double lon, LocalDateTime start, LocalDateTime end) {
         List<Manager> managerIdsByDistance = findAvailableManagersByDistance(lat, lon); // 거리 기반 필터링
         return filterManagersByContractTime(managerIdsByDistance, start, end); // 계약(일정)기반 필터링

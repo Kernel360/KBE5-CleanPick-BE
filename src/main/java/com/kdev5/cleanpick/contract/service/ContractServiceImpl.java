@@ -188,7 +188,7 @@ public class ContractServiceImpl implements ContractService {
             contractResponseDtoList.add(OneContractResponseDto.fromEntity(newContract, newContractDetail, cleaningOptions, newRoutineContract));
         }
 
-        //TODO: 매칭 알고리즘..
+        contractMatchingService.requestRoutineCleaning(newRoutineContract.getId(), routinecontractDto.getLatitude(), routinecontractDto.getLongitude(), contractDates);
 
         return RoutineContractResponseDto.fromEntity(newRoutineContract, contractResponseDtoList);
     }
