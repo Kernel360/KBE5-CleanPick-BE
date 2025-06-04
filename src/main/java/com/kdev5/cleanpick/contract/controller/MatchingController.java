@@ -48,4 +48,12 @@ public class MatchingController {
         contractMatchingService.acceptPersonalMatching(managerId, contractId);
         return ResponseEntity.ok(ApiResponse.ok());
     }
+
+    @PatchMapping("/{contractId}/{managerId}")
+    public ResponseEntity<ApiResponse<Void>> confirmMatching(@PathVariable("contractId") Long contractId,
+                                                             @PathVariable("managerId") Long managerId) {
+        Long userId = 2L; //TODO: 추후 연결
+        contractMatchingService.confirmMatching(userId, managerId, contractId);
+        return ResponseEntity.ok(ApiResponse.ok());
+    }
 }
