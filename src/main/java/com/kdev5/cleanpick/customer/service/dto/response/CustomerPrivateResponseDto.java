@@ -18,7 +18,7 @@ public class CustomerPrivateResponseDto {
 
 	private final String subAddress;
 
-	private CustomerPrivateResponseDto(String name, String phoneNumber, String profileImageUrl, String mainAddress,
+	public CustomerPrivateResponseDto(String name, String phoneNumber, String profileImageUrl, String mainAddress,
 		String subAddress) {
 		this.name = name;
 		this.phoneNumber = phoneNumber;

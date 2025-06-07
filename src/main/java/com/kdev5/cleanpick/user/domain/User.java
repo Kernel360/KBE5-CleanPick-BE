@@ -49,6 +49,13 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
+    public static User reference(Long id) {
+        return new User(id);
+    }
+
+    private User(Long id) {
+        this.id = id;
+    }
 
     public void activate() {
         userStatus = UserStatus.ACTIVE;
