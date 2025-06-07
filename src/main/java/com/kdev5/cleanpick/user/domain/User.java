@@ -29,16 +29,17 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private UserStatus userStatus;
 
     @Builder
-    public User(String email, String password, LoginType loginType, Role role, Status status) {
+    public User(String email, String password, LoginType loginType, Role role, UserStatus userStatus) {
         this.email = email;
         this.password = password;
         this.loginType = loginType;
         this.role = role;
-        this.status = status;
+        this.userStatus = userStatus;
     }
 
     public static User forAuthentication(Long id, Role role) {
@@ -48,8 +49,9 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
+
     public void activate() {
-        status = Status.ACTIVE;
+        userStatus = UserStatus.ACTIVE;
     }
 
 }

@@ -46,4 +46,6 @@ application.yml
 /src/main/resources/firebase-config.json
 src/main/resources/*
 
+/src/main/resources/firebase-config.json
+
 Dockerfile
