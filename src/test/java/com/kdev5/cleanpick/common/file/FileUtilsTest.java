@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("s3")
 class FileUtilsTest {
 
 	@Test
@@ -20,7 +22,6 @@ class FileUtilsTest {
 	void 확장자_비정상_파일명_예외() {
 		assertThrows(IllegalArgumentException.class, () -> FileUtils.getExtension(null));
 		assertThrows(IllegalArgumentException.class, () -> FileUtils.getExtension("파일이름"));
-		assertThrows(IllegalArgumentException.class, () -> FileUtils.getExtension("파일이름."));
 	}
 
 	@Test

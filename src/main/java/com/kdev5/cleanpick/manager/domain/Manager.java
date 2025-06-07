@@ -1,7 +1,6 @@
 package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,9 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.Fetch;
-
-import java.time.LocalTime;
 
 @Entity
 @Getter
