@@ -1,7 +1,7 @@
 package com.kdev5.cleanpick.user.service;
 
 import com.kdev5.cleanpick.user.domain.Role;
-import com.kdev5.cleanpick.user.domain.Status;
+import com.kdev5.cleanpick.user.domain.UserStatus;
 import com.kdev5.cleanpick.user.domain.User;
 import com.kdev5.cleanpick.user.domain.exception.EmailAlreadyExistsException;
 import com.kdev5.cleanpick.user.infra.UserRepository;
@@ -32,7 +32,7 @@ public class UserService {
                 .email(customerSignUpRequestDto.getEmail())
                 .password(passwordEncoder.encode(customerSignUpRequestDto.getPassword()))
                 .role(Role.CUSTOMER)
-                .status(Status.PENDING)
+                .userStatus(UserStatus.PENDING)
                 .build()
         );
 
@@ -51,10 +51,15 @@ public class UserService {
                 .email(managerSignUpRequestDto.getEmail())
                 .password(passwordEncoder.encode(managerSignUpRequestDto.getPassword()))
                 .role(Role.MANAGER)
-                .status(Status.PENDING)
+                .userStatus(UserStatus.PENDING)
                 .build()
         );
 
         return UserResponseDto.fromEntity(user);
+    }
+
+    @Transactional
+    public void logout(final Long id){
+        // TODO 로그아웃 구현
     }
 }

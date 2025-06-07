@@ -1,6 +1,10 @@
-package com.kdev5.cleanpick.customer.service.dto.request;
+package com.kdev5.cleanpick.manager.service.dto.request;
 
-import com.kdev5.cleanpick.customer.domain.Customer;
+import java.util.List;
+
+import com.kdev5.cleanpick.manager.domain.Manager;
+import com.kdev5.cleanpick.manager.domain.ManagerAvailableCleaning;
+import com.kdev5.cleanpick.manager.service.dto.AvailableTimeDto;
 import com.kdev5.cleanpick.user.domain.User;
 
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class WriteCustomerRequestDto {
+public class ManagerDetailRequestDto {
 
 	@NotBlank
 	private String name;
@@ -22,6 +26,8 @@ public class WriteCustomerRequestDto {
 	@NotBlank
 	private String subAddress;
 
+	private String profileMessage;
+
 	private String profileImageUrl;
 
 	@NotNull
@@ -30,16 +36,23 @@ public class WriteCustomerRequestDto {
 	@NotNull
 	private Double longitude;
 
-	public Customer toEntity(User user) {
-		return Customer.builder()
+	private List<Long> availableCleans;
+
+	private List<AvailableTimeDto> availableTimes;
+
+	public Manager toManagerEntity(User user) {
+		return Manager.builder()
 			.user(user)
 			.name(name)
 			.phoneNumber(phoneNumber)
+			.profileMessage(profileMessage)
+			.profileImageUrl(profileImageUrl)
 			.mainAddress(mainAddress)
 			.subAddress(subAddress)
-			.profileImageUrl(profileImageUrl)
 			.latitude(latitude)
 			.longitude(longitude)
 			.build();
 	}
+
+
 }

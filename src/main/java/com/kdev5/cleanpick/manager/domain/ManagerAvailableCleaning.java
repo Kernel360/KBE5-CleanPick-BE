@@ -4,10 +4,14 @@ import com.kdev5.cleanpick.cleaning.domain.Cleaning;
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 
 @Entity
 @Getter
 @Table(name = "manager_available_cleaning")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ManagerAvailableCleaning extends BaseTimeEntity {
 
 
@@ -22,4 +26,9 @@ public class ManagerAvailableCleaning extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cleaning_id", nullable = false)
     private Cleaning cleaning;
+
+    public ManagerAvailableCleaning(Manager manager, Cleaning cleaning) {
+        this.manager = manager;
+        this.cleaning = cleaning;
+    }
 }
