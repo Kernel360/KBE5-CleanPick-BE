@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.manager.controller;
 
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
+import com.kdev5.cleanpick.global.security.annotation.ManagerId;
 import com.kdev5.cleanpick.global.security.auth.CustomUserDetails;
 import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
 import com.kdev5.cleanpick.manager.service.ManagerService;
@@ -30,7 +31,7 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageResponse<ManagerSearchResponseDto>>> search (
             @RequestParam(required = false)
             String cleaning,
@@ -59,4 +60,13 @@ public class ManagerController {
             )
         );
     }
+
+    @GetMapping
+    @Operation(summary = "매니저 정보 조회", description = "매니저 정보 조회를 위한 API 입니다.")
+    public ResponseEntity<ApiResponse<ManagerPrivateResponseDto>> getManager (@ManagerId Long managerId){
+        return ResponseEntity.ok(
+            ApiResponse.ok(managerService.getManager(managerId))
+        );
+    }
+
 }

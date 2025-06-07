@@ -6,6 +6,7 @@ import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.domain.ManagerAvailableCleaning;
 import com.kdev5.cleanpick.manager.domain.ManagerAvailableTime;
 import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
+import com.kdev5.cleanpick.manager.domain.exception.ManagerNotFoundException;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableCleaningRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableRegionRepository;
 import com.kdev5.cleanpick.manager.infra.repository.ManagerAvailableTimeRepository;
@@ -62,6 +63,13 @@ public class ManagerService {
 
         managerAvailableTimeRepository.saveAll(managerAvailableTimes);
 
+        return ManagerPrivateResponseDto.fromEntity(manager);
+    }
+
+    public ManagerPrivateResponseDto getManager(Long managerId) {
+        final Manager manager = managerRepository.findById(managerId).orElseThrow(
+            () -> new ManagerNotFoundException(ErrorCode.MANAGER_NOT_FOUND)
+        );
         return ManagerPrivateResponseDto.fromEntity(manager);
     }
 

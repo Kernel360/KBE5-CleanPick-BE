@@ -13,6 +13,8 @@ public class ManagerPrivateResponseDto {
 
 	private final String profileImageUrl;
 
+	private final String profileMessage;
+
 	private final String mainAddress;
 
 	private final String subAddress;
@@ -23,16 +25,18 @@ public class ManagerPrivateResponseDto {
 			manager.getPhoneNumber(),
 			manager.getProfileImageUrl(),
 			manager.getMainAddress(),
-			manager.getSubAddress()
+			manager.getSubAddress(),
+			manager.getProfileMessage()
 		);
 	}
 
 	public ManagerPrivateResponseDto(String name, String phoneNumber, String profileImageUrl, String mainAddress,
-		String subAddress) {
+		String subAddress, String profileMessage) {
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.profileImageUrl = profileImageUrl;
 		this.mainAddress = mainAddress;
 		this.subAddress = subAddress;
+		this.profileMessage = profileMessage;
 	}
 }
