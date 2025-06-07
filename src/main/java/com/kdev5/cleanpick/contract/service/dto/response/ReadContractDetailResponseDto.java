@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.contract.service.dto.response;
 
 import com.kdev5.cleanpick.common.util.DateTimeUtil;
 import com.kdev5.cleanpick.contract.domain.ContractDetail;
+import com.kdev5.cleanpick.manager.domain.Manager;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,6 +26,9 @@ public class ReadContractDetailResponseDto {
     private final Integer totalTime;
 
     private final String address;
+    private final String subAddress;
+    private final Double longitude;
+    private final Double latitude;
     private final Integer totalPrice;
 
     private final String contractStatus;
@@ -36,7 +40,7 @@ public class ReadContractDetailResponseDto {
     List<ReadContractOptionResponseDto> options;
 
     @Builder
-    public ReadContractDetailResponseDto(Long contractId, Long customerId, String customerName, Long managerId, String managerName, String serviceName, LocalDate contractDate, LocalTime contractStartTime, Integer totalTime, String address, Integer totalPrice, String contractStatus, String petInfo, String requestMessage, String housingType, List<ReadContractOptionResponseDto> options) {
+    public ReadContractDetailResponseDto(Long contractId, Long customerId, String customerName, Long managerId, String managerName, String serviceName, LocalDate contractDate, LocalTime contractStartTime, Integer totalTime, String address, String subAddress, Double longitude, Double latitude, Integer totalPrice, String contractStatus, String petInfo, String requestMessage, String housingType, List<ReadContractOptionResponseDto> options) {
         this.contractId = contractId;
         this.customerId = customerId;
         this.customerName = customerName;
@@ -47,6 +51,9 @@ public class ReadContractDetailResponseDto {
         this.contractStartTime = contractStartTime;
         this.totalTime = totalTime;
         this.address = address;
+        this.subAddress = subAddress;
+        this.longitude = longitude;
+        this.latitude = latitude;
         this.totalPrice = totalPrice;
         this.contractStatus = contractStatus;
         this.petInfo = petInfo;
@@ -58,18 +65,22 @@ public class ReadContractDetailResponseDto {
     public static ReadContractDetailResponseDto fromEntity(ContractDetail contractDetail, List<ReadContractOptionResponseDto> options) {
 
         DateTimeUtil.DateTimeParts parts = DateTimeUtil.splitDateTime(contractDetail.getContract().getContractDate());
+        Manager manager = contractDetail.getContract().getManager();
 
         return ReadContractDetailResponseDto.builder()
                 .contractId(contractDetail.getContract().getId())
                 .customerId(contractDetail.getContract().getCustomer().getId())
                 .customerName(contractDetail.getContract().getCustomer().getName())
-                .managerId(contractDetail.getContract().getManager().getId())
-                .managerName(contractDetail.getContract().getManager().getName())
+                .managerId(manager != null ? manager.getId() : null)
+                .managerName(manager != null ? manager.getName() : null)
                 .serviceName(contractDetail.getContract().getCleaning().getServiceName().getDescription())
                 .contractDate(parts.getDate())
                 .contractStartTime(parts.getTime())
                 .totalTime(contractDetail.getContract().getTotalTime())
-                .address(contractDetail.getContract().getAddress()) // 확정 전엔 대략적인 위치만 노출
+                .address(contractDetail.getContract().getAddress())
+                .subAddress(contractDetail.getContract().getSubAddress())
+                .longitude(contractDetail.getContract().getLongitude())
+                .latitude(contractDetail.getContract().getLatitude())
                 .totalPrice(contractDetail.getContract().getTotalPrice())
                 .contractStatus(contractDetail.getContract().getStatus().name())
                 .petInfo(contractDetail.getPet())

@@ -50,6 +50,15 @@ public class Contract extends BaseTimeEntity {
     @Column(length = 255, nullable = false)
     private String address;
 
+    @Column(length = 255, nullable = true)
+    private String subAddress;
+
+    @Column(nullable = false)
+    private Double longitude;
+
+    @Column(nullable = false)
+    private Double latitude;
+
     @Column(nullable = false)
     private int totalPrice;
 
@@ -60,23 +69,26 @@ public class Contract extends BaseTimeEntity {
     private boolean personal;
 
     @Builder
-    public Contract(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract, LocalDateTime contractDate, String address, int totalPrice, int totalTime, boolean personal, ContractStatus status) {
+    public Contract(Customer customer, Manager manager, Cleaning cleaning, RoutineContract routineContract, LocalDateTime contractDate, String address, String subAddress, Double latitude, Double longitude, int totalPrice, int totalTime, boolean personal, ContractStatus status) {
         this.customer = customer;
         this.manager = manager;
         this.cleaning = cleaning;
         this.routineContract = routineContract;
         this.contractDate = contractDate;
         this.address = address;
+        this.subAddress = subAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.totalPrice = totalPrice;
         this.totalTime = totalTime;
         this.personal = personal;
-        this.status = status;
+        this.status = ContractStatus.작업전;
     }
 
     public void updateDate(LocalDateTime date) {
         this.contractDate = date;
     }
-      
+
     public void updateManager(Manager manager) {
         this.manager = manager;
 

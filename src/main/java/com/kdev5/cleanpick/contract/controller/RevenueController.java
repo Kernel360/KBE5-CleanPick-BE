@@ -46,7 +46,7 @@ public class RevenueController {
     }
 
     @GetMapping("/predicted/list")
-    @Operation(summary = "이번달 예상 수입 목록(작업 예정 목록) 목록", description = "이번달 예상 수입 목록(작업 예정 목록)을 조회합니다.")
+    @Operation(summary = "이번달 추가 예상 수입 목록(작업 예정 목록) 목록", description = "이번달 예상 수입 목록(작업 예정 목록)을 조회합니다.")
     // 작업전, 작업중
     public ResponseEntity<ApiResponse<ReadMonthlyRevenueResponseDto>> readPredictedRevenueList() {
         return ResponseEntity.ok(ApiResponse.ok(revenueService.readPredictedRevenueList(userId)));
