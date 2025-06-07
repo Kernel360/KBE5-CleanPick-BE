@@ -2,14 +2,23 @@ package com.kdev5.cleanpick.manager.controller;
 
 import com.kdev5.cleanpick.global.response.ApiResponse;
 import com.kdev5.cleanpick.global.response.PageResponse;
+import com.kdev5.cleanpick.global.security.auth.CustomUserDetails;
 import com.kdev5.cleanpick.manager.domain.enumeration.SortType;
 import com.kdev5.cleanpick.manager.service.ManagerService;
+import com.kdev5.cleanpick.manager.service.dto.request.ManagerDetailRequestDto;
+import com.kdev5.cleanpick.manager.service.dto.response.ManagerPrivateResponseDto;
 import com.kdev5.cleanpick.manager.service.dto.response.ManagerSearchResponseDto;
+
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,5 +44,18 @@ public class ManagerController {
     ) {
         Page<ManagerSearchResponseDto> result = managerService.searchManagers(cleaning, region, keyword, sortType, pageable);
         return ResponseEntity.ok(ApiResponse.ok(new PageResponse<>(result)));
+    }
+
+    @PostMapping
+    @Operation(summary = "최초 매니저 정보 입력", description = "최초 매니저정보가 입력되는 API 이며, 이때 최초로 매니저 레코드가 데이터베이스에 INSERT 됩니다.")
+    public ResponseEntity<ApiResponse<ManagerPrivateResponseDto>> enrollManager (
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @Valid @RequestBody ManagerDetailRequestDto managerDetailRequestDto
+    ) {
+        return ResponseEntity.ok(
+            ApiResponse.ok(
+                managerService.enrollManager(customUserDetails.getId(), managerDetailRequestDto)
+            )
+        );
     }
 }

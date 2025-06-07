@@ -1,7 +1,6 @@
 package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
-import com.kdev5.cleanpick.manager.domain.enumeration.LoginType;
 import com.kdev5.cleanpick.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,9 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.Fetch;
 
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -39,13 +36,30 @@ public class Manager extends BaseTimeEntity {
     @Column(name = "profile_message")
     private String profileMessage;
 
+    @Column(length = 255)
+    private String mainAddress;
+
+    @Column(length = 255)
+    private String subAddress;
+
+
+    private Double latitude;
+
+    private Double longitude;
+
     @Builder
-    public Manager(User user, String name, String phoneNumber, String profileImageUrl, String profileMessage) {
+    public Manager(Long id, User user, String name, String phoneNumber, String profileImageUrl, String profileMessage,
+        String mainAddress, String subAddress, Double latitude, Double longitude) {
+        this.id = id;
         this.user = user;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.profileImageUrl = profileImageUrl;
         this.profileMessage = profileMessage;
+        this.mainAddress = mainAddress;
+        this.subAddress = subAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }
 
