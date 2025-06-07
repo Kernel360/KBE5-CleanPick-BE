@@ -44,3 +44,6 @@ application.yml
 /src/main/generated/
 /src/main/java/com/kdev5/cleanpick/dev
 
+/src/main/resources/firebase-config.json
+
+Dockerfile
