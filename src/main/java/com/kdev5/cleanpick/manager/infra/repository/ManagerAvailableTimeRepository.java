@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface ManagerAvailableTimeRepository extends JpaRepository<ManagerAvailableTime, Long> {
     List<ManagerAvailableTime> findByManagerAndDayOfWeek(Manager manager, DayOfWeek dayOfWeek);
+
+    List<ManagerAvailableTime> findByDayOfWeekAndManagerIdIn(DayOfWeek dayOfWeek, List<Long> managerIds);
 }
