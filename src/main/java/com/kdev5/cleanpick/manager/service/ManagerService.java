@@ -46,16 +46,20 @@ public class ManagerService {
             () -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)
         );
 
+        user.activate();
+
         final Manager manager = managerRepository.save(managerDetailRequestDto.toManagerEntity(user));
 
         List<ManagerAvailableCleaning> managerAvailableCleanings = managerDetailRequestDto.getAvailableCleans().stream().map(
             cleaningId -> new ManagerAvailableCleaning(manager, Cleaning.reference(cleaningId))
         ).toList();
+
         managerAvailableCleaningRepository.saveAll(managerAvailableCleanings);
 
         List<ManagerAvailableTime> managerAvailableTimes = managerDetailRequestDto.getAvailableTimes().stream().map(
             availableTimeDto -> availableTimeDto.toManagerAvailableTime(manager)
         ).toList();
+
         managerAvailableTimeRepository.saveAll(managerAvailableTimes);
 
         return ManagerPrivateResponseDto.fromEntity(manager);

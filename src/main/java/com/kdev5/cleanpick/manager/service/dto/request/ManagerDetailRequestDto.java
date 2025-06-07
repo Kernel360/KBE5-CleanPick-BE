@@ -47,6 +47,8 @@ public class ManagerDetailRequestDto {
 			.phoneNumber(phoneNumber)
 			.profileMessage(profileMessage)
 			.profileImageUrl(profileImageUrl)
+			.mainAddress(mainAddress)
+			.subAddress(subAddress)
 			.latitude(latitude)
 			.longitude(longitude)
 			.build();

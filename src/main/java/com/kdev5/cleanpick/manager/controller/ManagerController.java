@@ -52,6 +52,7 @@ public class ManagerController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @Valid @RequestBody ManagerDetailRequestDto managerDetailRequestDto
     ) {
+        System.out.println(managerDetailRequestDto.getAvailableTimes().get(0).getDayOfWeek());
         return ResponseEntity.ok(
             ApiResponse.ok(
                 managerService.enrollManager(customUserDetails.getId(), managerDetailRequestDto)

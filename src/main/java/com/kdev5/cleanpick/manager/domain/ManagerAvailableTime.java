@@ -1,13 +1,14 @@
 package com.kdev5.cleanpick.manager.domain;
 
 import com.kdev5.cleanpick.global.entity.BaseTimeEntity;
+import com.kdev5.cleanpick.manager.domain.enumeration.DayOfWeek;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @Entity

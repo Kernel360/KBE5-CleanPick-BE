@@ -48,8 +48,8 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
-    public void activate(User user) {
-        user.status = Status.ACTIVE;
+    public void activate() {
+        status = Status.ACTIVE;
     }
 
 }
