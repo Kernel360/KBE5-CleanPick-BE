@@ -14,15 +14,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class AuthIntegrationTest {
 
     @Autowired
@@ -49,6 +50,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     void 로그인_성공시_JWT_헤더와_사용자정보_반환() throws Exception {
         // given
         LoginRequestDto request = new LoginRequestDto("test@user.com", "1234");
@@ -64,6 +66,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
+    @Transactional
     void 로그인_실패시_401_반환() throws Exception {
         LoginRequestDto request = new LoginRequestDto("test@user.com", "wrong-password");
         String json = objectMapper.writeValueAsString(request);

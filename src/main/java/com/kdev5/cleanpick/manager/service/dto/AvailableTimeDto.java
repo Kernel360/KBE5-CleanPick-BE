@@ -1,10 +1,10 @@
 package com.kdev5.cleanpick.manager.service.dto;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import com.kdev5.cleanpick.manager.domain.Manager;
 import com.kdev5.cleanpick.manager.domain.ManagerAvailableTime;
-import com.kdev5.cleanpick.manager.domain.enumeration.DayOfWeek;
 
 import lombok.Getter;
 
