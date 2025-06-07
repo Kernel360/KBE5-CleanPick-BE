@@ -127,7 +127,7 @@ class ManagerControllerTest {
               "longitude": 127.0276,
               "availableCleans": [1, 2],
               "availableTimes": [
-                { "dayOfWeek": "MON", "startTime": "09:00", "endTime": "12:00" }
+                { "dayOfWeek": "MONDAY", "startTime": "09:00", "endTime": "12:00" }
               ]
             }
         """;

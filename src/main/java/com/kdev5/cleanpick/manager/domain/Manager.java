@@ -60,9 +60,6 @@ public class Manager extends BaseTimeEntity {
     private String subAddress;
 
 
-    private Double latitude;
-
-    private Double longitude;
 
     @Builder
     public Manager(Long id, User user, String name, String phoneNumber, String profileImageUrl, String profileMessage,
