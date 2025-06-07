@@ -28,4 +28,12 @@ public class Cleaning extends BaseTimeEntity {
         this.serviceName = serviceName;
         this.content = content;
     }
+
+    public static Cleaning reference(Long id){
+        return new Cleaning(id);
+    }
+
+    private Cleaning(Long id) {
+        this.id = id;
+    }
 }

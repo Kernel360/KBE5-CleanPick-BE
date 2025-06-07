@@ -29,7 +29,7 @@ public class CustomerService {
 		final User user = userRepository.findById(customerId).orElseThrow(
 			() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
 
-		user.activate(user);
+		user.activate();
 
 		final Customer customer = customerRepository.save(writeCustomerRequestDto.toEntity(user));
 

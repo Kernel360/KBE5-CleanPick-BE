@@ -49,8 +49,9 @@ public class User extends BaseTimeEntity {
         return user;
     }
 
-    public void activate(User user) {
-        user.userStatus = UserStatus.ACTIVE;
+
+    public void activate() {
+        userStatus = UserStatus.ACTIVE;
     }
 
 }
