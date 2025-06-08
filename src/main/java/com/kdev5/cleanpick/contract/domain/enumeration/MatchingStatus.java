@@ -9,6 +9,7 @@ public enum MatchingStatus {
     ACCEPT("요쳥"),
     REJECT("거절"),
     PENDING("대기"),
+    CLOSED("종료"),
     CONFIRMED("확정");
 
     private final String description;

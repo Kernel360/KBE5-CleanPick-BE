@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -66,16 +67,24 @@ public class ContractMatchingService {
         if (!Objects.equals(contract.getCustomer().getId(), customerId))
             throw new ContractException(ErrorCode.CONTRACT_FORBIDDEN_ACCESS);
 
-        //TODO: 이미 매칭된 계약이면 오류
+        if (contract.getManager() != null)
+            throw new ContractException(ErrorCode.CONTRACT_ALREADY_MATCHED);
 
-        Nominee nominee = getNominee(managerId, contractId);
-        nominee.updateStatus(MatchingStatus.CONFIRMED);
-        nomineeRepository.save(nominee);
+
+        List<Nominee> allNominees = nomineeRepository.findAllByContract(contract);
+        for (Nominee nominee : allNominees) {
+            if (Objects.equals(nominee.getManager().getId(), managerId)) {
+                nominee.updateStatus(MatchingStatus.CONFIRMED);
+            } else {
+                nominee.updateStatus(MatchingStatus.CLOSED);
+            }
+            nomineeRepository.save(nominee);
+        }
 
         Manager manager = getManager(managerId);
         contract.updateManager(manager);
         contractRepository.save(contract);
-        //TODO: 최종 매칭 되면 나머지 nominee들 닫히도록 수정
+
     }
 
     private Nominee getNominee(Long managerId, Long contractId) {

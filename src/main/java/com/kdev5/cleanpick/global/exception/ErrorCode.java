@@ -13,6 +13,9 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(HttpStatus.BAD_REQUEST, "CONTRACT_NOT_FOUND", "계약을 찾을 수 없습니다."),
     CONTRACT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "CONTRACT_BAD_REQUEST", "1:1 계약이 아닙니다."),
     CONTRACT_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "CONTRACT_FORBIDDEN_ACCESS", "수정 권한이 없습니다."),
+    CONTRACT_ALREADY_MATCHED(HttpStatus.BAD_REQUEST, "CONTRACT_ALREADY_MATCHED", "매칭이 종료된 계약입니다."),
+
+
     MANAGER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MANAGER_NOT_FOUND", "존재하지 않는 매니저입니다."),
     CLEANING_NOT_FOUND(HttpStatus.BAD_REQUEST, "CLEANING_NOT_FOUND", "존재하지 않는 청소입니다."),
     CUSTOMER_NOT_FOUND(HttpStatus.BAD_REQUEST, "CUSTOMER_NOT_FOUND", "존재하지 않는 고객입니다."),

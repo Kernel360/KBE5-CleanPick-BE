@@ -2,6 +2,7 @@ package com.kdev5.cleanpick.contract.controller;
 
 import com.kdev5.cleanpick.contract.service.ContractMatchingService;
 import com.kdev5.cleanpick.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,7 @@ public class MatchingController {
     }
 
     @PatchMapping("/{contractId}/{managerId}")
+    @Operation(summary = "최종 매칭", description = "매니저들 중 한 명을 골라 최종 매칭을 합니다.")
     public ResponseEntity<ApiResponse<Void>> confirmMatching(@PathVariable("contractId") Long contractId,
                                                              @PathVariable("managerId") Long managerId) {
         Long userId = 2L; //TODO: 추후 연결
